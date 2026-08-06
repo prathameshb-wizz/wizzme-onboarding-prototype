@@ -753,7 +753,9 @@ function scene7(){
     deckArea.querySelector('#deckstage').appendChild(c);return c;};
   POSTS.forEach((po,i)=>{
     cardTimes.push(at);
-    const c=mk(`<div class="pquote" style="background:${po.tint}"><span class="pgq2">\u201C</span><em>${po.q}</em></div>
+    const c=mk(`${po.img
+      ?`<div class="pcov"><img src="${po.img}"></div>`
+      :`<div class="pquote" style="background:${po.tint}"><span class="pgq2">\u201C</span><em>${po.q}</em></div>`}
       <div class="pin"><div class="pkick">${po.kick}</div>
       <div class="pti">${po.ti}</div>
       <div class="pby"><span class="pinit">${initials(po.name)}</span><span><b>${po.name}</b><i>${po.role}</i></span></div></div>`);
@@ -832,6 +834,9 @@ function scene8(){
 }
 
 /* ================= 9 · what could you talk about without preparing ================= */
+function topicNext(){
+  if(app.sel.length===1){ app.chosen=app.sel[0]; play(11); } else play(10);
+}
 function scene9(){
   stage.innerHTML='';
   const t=gsap.timeline();
@@ -841,10 +846,15 @@ function scene9(){
     <div class="tgrid">${TOPICS.map(tp=>`<div class="tcard" data-k="${tp.k}">
       <div class="tl">${tp.l}</div><div class="ts">${tp.s}</div></div>`).join('')}</div>
     <input class="fin tfree" id="tfree" placeholder="Something else? Type it here"/>
-    <button class="cta dim" id="topicGo" disabled onclick="event.stopPropagation();play(10)">Pick a few to continue</button>`,84);
+    <button class="cta dim" id="topicGo" disabled onclick="event.stopPropagation();topicNext()">Pick a few to continue</button>`,84);
   t.fromTo(w.querySelectorAll('.say,.appsub'),{opacity:0,y:12},{opacity:1,y:0,duration:.45,stagger:.1},.1);
   t.fromTo(w.querySelectorAll('.tcard'),{opacity:0,y:14,scale:.95},{opacity:1,y:0,scale:1,duration:.45,stagger:.06,ease:'back.out(1.2)'},.4);
   t.fromTo(w.querySelector('#topicGo'),{opacity:0},{opacity:1,duration:.4},1.1);
+  // returning to this screen restores earlier picks instead of silently keeping them
+  w.querySelectorAll('.tcard').forEach(c=>c.classList.toggle('on',app.sel.includes(c.dataset.k)));
+  const go0=w.querySelector('#topicGo');
+  go0.disabled=!app.sel.length; go0.classList.toggle('dim',!app.sel.length);
+  if(app.sel.length) go0.textContent='Continue with '+app.sel.length;
   const free=w.querySelector('#tfree');
   free.addEventListener('click',e=>e.stopPropagation());
   free.addEventListener('input',()=>{
@@ -896,7 +906,7 @@ const IV_FOLLOW=['What made it stick with you?','And has that changed how you ac
 function scene11(){
   stage.innerHTML='';
   const t=gsap.timeline();
-  const tp=TOPICS.find(x=>x.k===app.chosen)||TOPICS[2];
+  const tp=TOPICS.find(x=>x.k===app.chosen)||(app.chosen==='free'?{k:'free',l:'Your topic'}:TOPICS[2]);
   const heroart=({work:ARTS[0],money:ARTS[1],college:ARTS[2],moving:ARTS[3],rel:ARTS[3]})[tp.k]||ARTS[0];
   const q=app.ivStep===0?(IV_Q[tp.k]||IV_Q.free):IV_FOLLOW[app.ivStep-1];
   const w=el('appwrap ivwrap',`
