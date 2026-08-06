@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Wizzme · Share-first Onboarding · Engineering Handover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--serif:'Gentium Book Plus',Georgia,serif;--sans:'Manrope',system-ui,sans-serif;
+    --ink:#26262b;--dim:rgba(38,38,44,.72);--faint:rgba(38,38,44,.5);--card:#FBF9F4;--line:rgba(38,38,44,.12)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:#F6F3EC;line-height:1.6;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 28px 120px}
+  header.doc{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+  .kick{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--faint)}
+  h1{font-family:var(--serif);font-weight:700;font-size:34px;line-height:1.15;margin:10px 0 12px}
+  .meta{font-size:13px;color:var(--dim)}
+  .meta a{color:var(--ink);font-weight:700}
+  h2{font-family:var(--serif);font-weight:700;font-size:24px;margin:52px 0 6px;padding-top:18px;border-top:1px solid var(--line)}
+  h3{font-family:var(--serif);font-weight:700;font-size:18px;margin:28px 0 6px}
+  h4{font-size:13.5px;font-weight:800;margin:20px 0 4px}
+  p{margin:8px 0;color:var(--ink)}
+  p.note,li.note{color:var(--dim)}
+  ul,ol{margin:8px 0 8px 22px}
+  li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px;background:#fff}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--card);font-weight:800;font-size:12px;letter-spacing:.04em}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:rgba(38,38,44,.06);
+    padding:1px 5px;border-radius:4px}
+  .callout{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ink);
+    border-radius:10px;padding:14px 18px;margin:16px 0}
+  .callout b{display:block;margin-bottom:4px}
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--dim);margin-right:6px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:24px 0}
+  .toc ol{margin-left:18px}
+  .toc a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--faint)}
+  .swatch{display:inline-block;width:13px;height:13px;border-radius:4px;border:1px solid var(--line);vertical-align:-2px;margin-right:6px}
+  .screens{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:14px 0}
+  .scr{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .scr b{font-family:var(--serif);font-size:15.5px;display:block}
+  .scr span{font-size:12.5px;color:var(--dim)}
+  footer{margin-top:64px;font-size:12.5px;color:var(--faint);border-top:1px solid var(--line);padding-top:16px}
+  @media print{body{background:#fff}.wrap{padding-top:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <div class="kick">Wizzme · Product Engineering Handover</div>
+  <h1>Share-first Onboarding: film, sign-up, and the first story</h1>
+  <div class="meta">
+    Prepared 6 Aug 2026 · Prototype (source of truth for look, copy, and motion):
+    <a href="https://prathameshb-wizz.github.io/wizzme-onboarding-prototype/" target="_blank">live interactive prototype</a> ·
+    every screen and animation in this document exists there; when this doc and the prototype disagree, the prototype wins.
+  </div>
+</header>
+
+<div class="toc">
+  <b>Contents</b>
+  <ol>
+    <li><a href="#overview">What this is, and what ships</a></li>
+    <li><a href="#flow">The flow at a glance</a></li>
+    <li><a href="#film">Part A · The film (scenes 1–7)</a></li>
+    <li><a href="#deck">The real-story deck (end of scene 7)</a></li>
+    <li><a href="#app">Part B · The app screens (8–13), full specs</a></li>
+    <li><a href="#tokens">Design tokens and typography</a></li>
+    <li><a href="#components">Component inventory</a></li>
+    <li><a href="#motion">Motion spec</a></li>
+    <li><a href="#backend">Backend and data requirements</a></li>
+    <li><a href="#analytics">Analytics</a></li>
+    <li><a href="#assets">Asset manifest</a></li>
+    <li><a href="#qa">Acceptance criteria and QA checklist</a></li>
+    <li><a href="#open">Open items and flags</a></li>
+  </ol>
+</div>
+
+<h2 id="overview">1 · What this is, and what ships</h2>
+<p>This onboarding replaces the current sign-up with a <b>share-first</b> arc: a short animated film makes the case that the user's lived experience is valuable and that sharing it is effortless on Wizzme; sign-up happens at the emotional peak; and the very first in-app action is answering three light interview questions that become the user's first story ("painting"), hung on their profile before they ever see a feed.</p>
+<p>The build divides cleanly in two:</p>
+<ul>
+  <li><b>Part A — the film (scenes 1–7).</b> Pure presentation. No user data, no backend. Ship it as a GSAP timeline (the prototype's implementation can be ported nearly as-is into a React component), or pre-render it to a video/Lottie if bundle size wins. Tap/click advances; it also auto-advances.</li>
+  <li><b>Part B — the app (screens 8–13).</b> Real product: auth, profile basics, topic selection, the answering engine, story generation, and the story reveal. These need routes, state, and backend endpoints.</li>
+</ul>
+<div class="callout"><b>Locked decisions (do not re-litigate in implementation)</b>
+  <ul>
+    <li>The answering engine <b>reuses the existing Sharer interview engine</b> — same chip-driven Q&amp;A interaction, restyled per screen 11 below. Do not build a second engine.</li>
+    <li>Message architecture of the film (the seven-beat narrative and its copy) is final.</li>
+    <li>No em dashes anywhere in copy. No competitor platform names. All example people are two-part real names.</li>
+    <li>Story visibility defaults to <b>Connections</b>, changeable at the reveal (Private / Connections / Public).</li>
+  </ul>
+</div>
+
+<h2 id="flow">2 · The flow at a glance</h2>
+<div class="screens">
+  <div class="scr"><b>1 · Your experience is valuable</b><span>Claim + evidence: four searchers become three people with real questions.</span></div>
+  <div class="scr"><b>2 · Why it was never shared</b><span>Cost of one proper post: 4→45 min counter, five step chips.</span></div>
+  <div class="scr"><b>3 · So we ask instead</b><span>Chat demo: Wizzme interviews you about switching streams.</span></div>
+  <div class="scr"><b>4 · It becomes a story</b><span>The interview becomes a painted story card.</span></div>
+  <div class="scr"><b>5 · It finds the right people</b><span>Search → same card → Arjun asks through Wizzme.</span></div>
+  <div class="scr"><b>6 · Story by story, a profile</b><span>Profile grid fills 1→4 with citation/appreciation counts.</span></div>
+  <div class="scr"><b>7 · Wizzme + sign up</b><span>PRESENTING → logo → 3 subtitles → real-story deck → empty canvas → CTA.</span></div>
+  <div class="scr"><b>8 · The basics</b><span>Name, DOB, pronouns. Continue.</span></div>
+  <div class="scr"><b>9 · Topics</b><span>Pick up to 4 of 8 + free text. One pick skips screen 10.</span></div>
+  <div class="scr"><b>10 · Which one first</b><span>Order chooser, only when 2+ topics picked.</span></div>
+  <div class="scr"><b>11 · Answering</b><span>Interview engine: hero + question + chips, 3 steps.</span></div>
+  <div class="scr"><b>12 · Buffer</b><span>Answers → painting resolves into the real cover → who needs it.</span></div>
+  <div class="scr"><b>13 · Your story</b><span>Full-bleed reveal, visibility control, "Hang it on my profile".</span></div>
+</div>
+<p class="note">Continuity rule that must survive implementation: scenes 3, 4, 5 are <b>one story</b> (switching streams). Scene 3 interviews you about it, scene 4 shows the card it becomes, scene 5 shows Arjun Mehta finding it. Arjun is also the first person shown in scene 1. Do not swap any of these examples independently.</p>
+
+<h2 id="film">3 · Part A · The film (scenes 1–7)</h2>
+<p>Full choreography lives in the prototype's <code>scene1()…scene7()</code> functions — each returns a fresh GSAP timeline; <code>play(n)</code> kills the current one and rebuilds. Below is what each scene must communicate and its non-negotiable beats. Durations are as tuned in the prototype; treat them as spec.</p>
+<table>
+  <tr><th>Scene</th><th>Copy (final)</th><th>Non-negotiable beats</th></tr>
+  <tr><td>1</td><td>"Did you know?" → "Your life has answers / people are searching for." → three people (relation line dominant, name small, question quiet italic) → "Your experience is valuable." → "Yet you rarely get to share it."</td><td>The opening line is read <b>alone</b>; four face dots appear only ~1.5s after it lands, beneath it. Each person appears alone and leaves before the next. The two closing claims each stand alone on screen.</td></tr>
+  <tr><td>2</td><td>"Sharing takes time and effort." · cost card "ONE POST, WRITTEN PROPERLY" · "So it stays in your head."</td><td>Counter starts at 4, ticks to 45 min; five step chips (find the thread / structure it / write it / rewrite it / post it) enter with the card, never an empty card.</td></tr>
+  <tr><td>3</td><td>"So we ask questions made for you." · Q: "You switched streams after second year. What finally pushed you?" · chips: One course I loved / A semester of misery / A gut feeling · pick becomes right bubble · Q: "Was there a moment you almost went back?" · typed reply: "yeah, pretty much every day in the first month" · "Just making sharing effortless."</td><td>Chat convention: Wizzme dark bubbles left, user light bubbles right. The typed reply must finish before the closing line appears. User replies are written the way people actually type to an agent (lowercase, plain).</td></tr>
+  <tr><td>4</td><td>"And it becomes a story worth looking at." · card: Switching streams, 2022 · "Why I switched streams and never looked back"</td><td>The card is the same story scene 3 just interviewed. Cover art wipes in, then byline, title, body, read-more, staggered.</td></tr>
+  <tr><td>5</td><td>"Your story finds the right people. And conversations begin." · search types "thinking of switching streams" · same card, smaller · Arjun Mehta · asked through Wizzme: "I am stuck on this exact decision right now. What finally made you sure?"</td><td>Search completes typing before the result card appears. Comment types itself, right-aligned conversation style, and the scene holds ~8s after typing so it can be read (auto-advance delay 5000ms on this scene vs 1300ms default).</td></tr>
+  <tr><td>6</td><td>"Story by story, you paint a profile." · profile head (You · N stories, ticks 1→4, singular/plural correct) · 2×2 grid of covers</td><td>Each grid tile shows title plus two metric glyphs with counts: citations (quote glyph) and appreciations (medal glyph). Icons only, no labels. Scene fades itself out at the end (soft outro).</td></tr>
+  <tr><td>7</td><td>PRESENTING → Wizzme lockup → subtitles: AN AI-NATIVE SOCIAL NETWORK / BUILT FOR DEEPER CONNECTIONS / WHERE EXPERIENCE BECOMES WISDOM (settles on the last) → "A FEW STORIES ON WIZZME" → deck → "your canvas is empty" card lands and stays → "Start with one story to see others" + Sign up with Google / Sign in / legal</td><td>Strictly one moving element at a time: the phone-chrome brand fades out as PRESENTING rises; PRESENTING fully leaves before the logo lands; all three subtitles flow (timeline-driven, ~2.1s apart) before any card appears. Deck cards share one dwell (2.4s each). Tap seeks to the next card; a Skip button jumps to the canvas/CTA.</td></tr>
+</table>
+
+<h2 id="deck">4 · The real-story deck (end of scene 7)</h2>
+<p>The four cards are <b>real public Wizzme stories</b>, chosen and sequenced deliberately: ambition hook → emotional depth → joy → deliberately ordinary (the last card lowers the bar right before "your canvas is empty"). One story per author. Quotes are verbatim.</p>
+<table>
+  <tr><th>#</th><th>Card</th><th>Author</th><th>Story ID (production content source)</th><th>Treatment</th></tr>
+  <tr><td>1</td><td><b>What YC actually feels like from inside</b> · Startups · "If you're worried about food and rent, you cannot build a company."</td><td>Aryan Agarwal · Co-Founder, Yenmo (YC W24)</td><td><code>ccd2d786-970f-4ec2-a543-b18a6d46b10b</code></td><td>Painted cover <code>real-yc.jpg</code></td></tr>
+  <tr><td>2</td><td><b>The morning I couldn't smile</b> · Resilience · "It took a month before the faintest flicker appeared at the corner of my mouth."</td><td>Shivani Bajaj · MBA, Stanford GSB</td><td><code>bc0846df-20dc-4e66-afe7-d8ff70b2e3b2</code></td><td><b>Quote-only card</b> (tinted paper, ghost quote mark, no image) — intentional, do not add art</td></tr>
+  <tr><td>3</td><td><b>One ticket to Camp Nou</b> · Travel · "I just don't know how to describe that game to anybody. You just had to be there."</td><td>Anish Dokania · AI Engineer, Allstate</td><td><code>cb6006eb-5dbb-47f9-8d10-daab77b91bc0</code></td><td>Painted cover <code>real-campnou.jpg</code></td></tr>
+  <tr><td>4</td><td><b>My first bike, chosen on seating comfort</b> · Everyday · "I've ridden a max of 150-200 km one way, and there was no issue with comfort."</td><td>Pranay Kumar Urma · Product, Glance</td><td><code>4743ebbb-95f0-46d8-9cbc-2e9a0b91be2e</code></td><td>Painted cover <code>real-firstbike.jpg</code></td></tr>
+</table>
+<ul>
+  <li>Authors are shown with an <b>initials avatar</b> (no profile photos on this screen) + real name + role line.</li>
+  <li>These should be served from a small curated config (story IDs above), not hardcoded strings, so content can rotate without a release. Consent: all four are public stories; confirm author consent for marketing-surface use as policy requires.</li>
+</ul>
+
+<h2 id="app">5 · Part B · The app screens (8–13), full specs</h2>
+
+<h3>Screen 8 · The basics</h3>
+<p><span class="tag">Route</span><span class="tag">Auth required</span> Entered after Google sign-up (Supabase Auth, existing integration in <code>src/integrations/supabase/</code>).</p>
+<ul>
+  <li>Heading "First, the basics." + subline "This stays on your profile, nothing else does."</li>
+  <li>Fields: <b>Your name</b> (text, prefilled from Google profile), <b>Date of birth</b> (date input, prototype shows DD / MM / YYYY), <b>Pronouns</b> as single-select chips: She / her · He / him · They / them, plus a quiet underlined text link <b>"Prefer not to say"</b> below the chips (it is deliberately NOT styled as a fourth chip; clicking it continues without a pronoun).</li>
+  <li>Primary CTA <b>Continue</b> → screen 9. Validation: name non-empty; DOB optional-valid; pronouns optional.</li>
+</ul>
+
+<h3>Screen 9 · Topics</h3>
+<p>"What could you talk about without preparing?" + "Pick a few. One story now, the rest stay saved."</p>
+<ul>
+  <li>Grid (2-col) of 8 topic cards, each title + sub: College days (the friends, the chaos) · Office life (first jobs, bosses, growth) · Moving cities (flats, food, finding your feet) · Relationships (friends, dating, family) · Money (salaries, saving, mistakes) · Travel (solo trips, plans gone wrong) · Getting fit (around everything else) · Interests (startups, sports, hobbies).</li>
+  <li>Free-text input "Something else? Type it here" — non-empty counts as a selection.</li>
+  <li>Selection cap: 4. CTA is disabled AND visually muted (grey fill, not just opacity) until ≥1 selection; label switches "Pick a few to continue" → "Continue with N".</li>
+  <li><b>Routing rule:</b> exactly 1 selection → set it as the chosen topic and go <b>directly to screen 11</b> (skip 10). 2+ → screen 10.</li>
+  <li><b>State restore:</b> navigating back to this screen re-renders prior selections as selected and the CTA live.</li>
+</ul>
+
+<h3>Screen 10 · Which one first</h3>
+<ul>
+  <li>"Which one first?" + "Start with whichever you are in the mood for." Rows for each selected topic (label + sub + chevron); tapping one sets the chosen topic → screen 11. Footnote: "The rest stay saved for later."</li>
+</ul>
+
+<h3>Screen 11 · Answering (the interview engine)</h3>
+<p><span class="tag">Reuses Sharer engine</span> Three steps per story: one topic question + two follow-ups. Restyle per below; interaction logic is the existing engine's.</p>
+<ul>
+  <li><b>Hero (148px):</b> topic cover art, blurred 7px + saturate 1.25, gradient scrim (.62→.28→.12). Overlaid header: 44px ringed avatar, topic name (serif 18px bold) + "N answered so far ⌄", right-aligned pill with brush icon wag animation + "painting your cover". Bottom: frosted paint-progress bar, width 15% + 30% per answered step.</li>
+  <li><b>Sheet (#FAF7F3, radius 28):</b> grab handle, orb + Kalam coaching line rotating per step: "Say it just how it comes out." / "No need to polish it." / "Last one, then I shape it.", question (serif, 23px), help line "Pick the one that fits best.", answer chips (44px min height; tap → selected grey state → 650ms pause → next question, or → screen 12 after step 3).</li>
+  <li><b>Bar:</b> mic and attachment circle buttons (voice/photo answers, wire to existing capabilities or stub), right-aligned "Skip" (skips the current question, not the flow).</li>
+  <li><b>First questions per topic (final copy):</b> college: "What is the one college memory you still tell people about?" · work: "What caught you off guard in your first job?" · moving: "What did nobody warn you about moving to a new city?" · rel: "What has dating in your twenties actually taught you?" · money: "What did your first salary actually teach you?" · travel: "What did your first solo trip change in you?" · fitness: "What finally made fitness stick for you?" · interests: "What could you talk about for hours without notes?" · free text: "What is the story you tell most often about this?" <b>Follow-ups:</b> "What made it stick with you?" then "And has that changed how you act now?"</li>
+  <li>Phone chrome (brand + film dashes) is hidden on this screen and all later ones — the hero owns the top.</li>
+</ul>
+
+<h3>Screen 12 · Buffer (story is being made)</h3>
+<p>~9.5s, three acts under a status line with a pulsing dot; this is where the backend generates the story and cover.</p>
+<ol>
+  <li><b>"Reading what you painted"</b> — the user's three answers laid down as small rotated cards.</li>
+  <li><b>"Painting your cover"</b> — answers sweep away; an empty canvas takes colour washes that <b>resolve into a blurred version of the actual final cover</b> (blur 16→5). The thing being painted must be the thing revealed on screen 13.</li>
+  <li><b>"Finding who needs it"</b> — you → arrow → three avatars row.</li>
+</ol>
+<p class="note">Treat the animation as a minimum-duration mask over the real generation call: if generation finishes early, hold to act timing; if late, loop act 2 washes until ready.</p>
+
+<h3>Screen 13 · Your story (reveal)</h3>
+<ul>
+  <li>Full-bleed cover art background (blur 40 + dark veil), label "YOU PAINTED SOMETHING", heading "Your answers / became a story".</li>
+  <li>Story card: cover (with the white circular quote badge, top-left), byline "&lt;Topic&gt;, in your words" (Kalam), title = the user's first answer, body composed from the question + answers (LLM-composed in production; the prototype shows the template shape).</li>
+  <li><b>Visibility pill:</b> "Visible to <b>Connections</b> ⌄" opens a real menu: Private / Connections / Public, default Connections, selection updates the pill.</li>
+  <li>CTA <b>"Hang it on my profile"</b> → persists story + visibility, lands in the app proper.</li>
+  <li>Cover art follows the chosen topic (topic→art mapping; free-text topics get a default until a cover pipeline exists).</li>
+</ul>
+
+<h2 id="tokens">6 · Design tokens and typography</h2>
+<table>
+  <tr><th>Token</th><th>Value</th><th>Use</th></tr>
+  <tr><td><code>--ink</code></td><td><span class="swatch" style="background:#26262b"></span>#26262B</td><td>Primary text, dark bubbles, primary buttons</td></tr>
+  <tr><td><code>--dim</code></td><td>rgba(38,38,44,.72)</td><td>Secondary text</td></tr>
+  <tr><td><code>--faint</code></td><td>rgba(38,38,44,.48)</td><td>Tertiary/hint text</td></tr>
+  <tr><td><code>--card</code></td><td><span class="swatch" style="background:#FBF9F4"></span>#FBF9F4</td><td>Cards; sheet uses #FAF7F3</td></tr>
+  <tr><td>Canvas</td><td>warm off-white gradient (see prototype <code>.device</code>)</td><td>Screen background</td></tr>
+  <tr><td>Quote-card tints</td><td>#EFE7DA · #E7E9E2 · #E9E4EC · #EDE3DE</td><td>Deck quote panels</td></tr>
+</table>
+<table>
+  <tr><th>Family</th><th>Role</th></tr>
+  <tr><td><b>Gentium Book Plus</b> (serif)</td><td>All narrative lines, questions, story titles, headings</td></tr>
+  <tr><td><b>Manrope</b> (sans)</td><td>UI: buttons, chips, forms, labels, metadata</td></tr>
+  <tr><td><b>Kalam</b> (handwritten)</td><td>Accents only: "Did you know?", story bylines, coaching lines, canvas-empty card, wordmark-adjacent moments</td></tr>
+</table>
+<p class="note">In the product codebase these must map to the design-system scale in <code>DESIGN_SYSTEM.md</code> (semantic tokens, type scale classes) — no arbitrary values; the hex values above are the prototype's and should be reconciled with existing tokens rather than duplicated.</p>
+
+<h2 id="components">7 · Component inventory</h2>
+<table>
+  <tr><th>Component</th><th>Prototype reference</th><th>Notes</th></tr>
+  <tr><td>Story card (large + mini)</td><td><code>.stoc</code>, <code>.stoc.mini</code></td><td>Cover 158px (mini 128px), object-position 50% 26%, white quote badge <code>.fcq</code> top-left</td></tr>
+  <tr><td>Deck post card</td><td><code>.post</code>, <code>.pquote</code>, <code>.pinit</code></td><td>Two variants: painted cover, or quote-only (tinted panel + ghost quote); initials avatar</td></tr>
+  <tr><td>Profile grid tile</td><td><code>.pft</code>, <code>.pfx</code></td><td>Cover 82px + title + citation/appreciation glyph counts</td></tr>
+  <tr><td>Chat bubbles</td><td><code>.crow</code>, <code>.cq</code>, <code>.cu</code>, <code>.convrow.rt</code>, <code>.cvb</code></td><td>Wizzme left/dark, user right/light; comment variant with author line</td></tr>
+  <tr><td>Answer chips</td><td><code>.anchip</code></td><td>44px min height, selected grey state, 650ms advance delay</td></tr>
+  <tr><td>Topic cards + free text</td><td><code>.tcard</code>, <code>.tfree</code></td><td>Selected state, 4-cap, restore-on-return</td></tr>
+  <tr><td>Interview hero</td><td><code>.ivhero</code>, <code>.ivhead</code>, <code>.ivpaint</code>, <code>.ivline</code></td><td>Blur + scrim + paint pill + progress bar</td></tr>
+  <tr><td>Buffer canvas</td><td><code>.bufcv</code>, <code>.bufart</code></td><td>Washes resolve into blurred real cover</td></tr>
+  <tr><td>Visibility pill + menu</td><td><code>.finvis</code>, <code>.vismenu</code></td><td>Private / Connections / Public, default Connections</td></tr>
+  <tr><td>Primary/disabled CTA</td><td><code>.cta</code>, <code>.cta.dim</code></td><td>Disabled = grey fill, not opacity (survives entry animations)</td></tr>
+  <tr><td>Cost card</td><td><code>.cst</code></td><td>Counter + step chips (film only)</td></tr>
+</table>
+<p class="note">In production, build these on shadcn/ui primitives per repo rules (Button, Dialog for the visibility menu, Form + zod for screen 8) — the prototype's DOM is reference for look and behavior, not for architecture.</p>
+
+<h2 id="motion">8 · Motion spec</h2>
+<ul>
+  <li><b>Engine:</b> GSAP 3 timelines; one timeline per scene, rebuilt on entry. Word-stagger text reveals (~.07–.09s/word) with highlight underlines painting in after the word lands; typing effects at ~35–40ms/char, grouped into non-breaking word spans so lines never wrap mid-word.</li>
+  <li><b>Signature easings:</b> entrances <code>power2/power3.out</code> or <code>back.out(1.3–1.6)</code>; exits <code>power2.in</code>; drifts linear. Deck cards: peek at corner (opacity .28) → enter (.85s) → linear drift through centre (2.4s) → accelerate out (.75s).</li>
+  <li><b>One-moving-thing rule:</b> at any moment exactly one element should demand the eye. This is deliberate throughout scenes 1 and 7 and must be preserved in any re-implementation.</li>
+  <li><b>Auto-advance:</b> film scenes advance on tap and automatically (1300ms after scene end; scene 5 holds 5000ms; scene 6→7 hands over in 400ms). Arrow keys navigate everywhere.</li>
+  <li><b>Reduced motion:</b> the product build must respect <code>prefers-reduced-motion</code> via <code>useReducedMotion()</code> from <code>@/lib/animations</code> — film falls back to static frames with tap-through; app screens drop non-essential animation.</li>
+</ul>
+
+<h2 id="backend">9 · Backend and data requirements</h2>
+<table>
+  <tr><th>Need</th><th>Detail</th><th>Existing scaffolding</th></tr>
+  <tr><td>Auth</td><td>Google via Supabase; on first sign-in create profile shell and route to screen 8</td><td><code>src/integrations/supabase/</code>, <code>useAuth</code></td></tr>
+  <tr><td>Profile basics</td><td>Persist name, DOB, pronouns (nullable). Pronouns are display-only metadata</td><td>profile endpoints</td></tr>
+  <tr><td>Topic selection</td><td>Persist up to 4 topics + optional free-text topic; mark one as active</td><td><code>src/config/pilotTopics.ts</code> (pilot topic config)</td></tr>
+  <tr><td>Interview session</td><td>Start session (topic) → serve Q1 + follow-ups → store answers (chip choice or free text/voice). Reuse Sharer interview engine + its persistence</td><td>Sharer engine; <code>backend_services/app/routes/pilot_routes.py</code> + <code>public/pilot/participants.json</code> from the pilot phase</td></tr>
+  <tr><td>Story generation</td><td>Compose title (from answer 1) + body from Q&amp;A via LLM; per repo rules any Claude client uses <code>max_retries=3</code>, <code>timeout=90</code></td><td>agents layer (LangGraph)</td></tr>
+  <tr><td>Cover art</td><td>Watercolour-style cover per topic. v1: fixed topic→art mapping (as prototype). v2: generated per story. Buffer screen masks latency (min ~9.5s, loop act 2 if slower)</td><td>—</td></tr>
+  <tr><td>Visibility</td><td>Story visibility enum private/connections/public, default connections, set at reveal</td><td>story model</td></tr>
+  <tr><td>Deck content</td><td>Curated list of 4 story IDs (see §4) served to the pre-signup screen; public stories only</td><td>stories table</td></tr>
+  <tr><td>Metrics glyphs</td><td>Citations + appreciations counts per story (already platform concepts) for profile tiles</td><td>existing counters</td></tr>
+</table>
+<p class="note">All new routes follow repo rules: SQL only in <code>agents/db_utils/</code> mixins, responses include <code>"success": true</code>, blueprints registered in <code>app/__init__.py</code>, client methods added in <code>src/integrations/api/client.ts</code>, cache paths get invalidation helpers.</p>
+
+<h2 id="analytics">10 · Analytics</h2>
+<p>Screens are auto-tracked once routes exist (add entries to <code>src/lib/analytics/screens.ts</code>). Custom events via <code>track()</code> with a typed catalog (suggest <code>onboardingEvents.ts</code>), naming <code>&lt;domain&gt;_&lt;object&gt;_&lt;action&gt;</code>:</p>
+<ul>
+  <li><code>onboarding_film_scene_viewed</code> (scene_index), <code>onboarding_film_skipped</code>, <code>onboarding_deck_card_viewed</code> (story_id), <code>onboarding_signup_clicked</code></li>
+  <li><code>onboarding_basics_submitted</code> (pronouns_set: bool), <code>onboarding_topics_submitted</code> (count, has_free_text), <code>onboarding_topic_started</code> (topic)</li>
+  <li><code>onboarding_answer_submitted</code> (step, input_type: chip|text|voice), <code>onboarding_question_skipped</code> (step)</li>
+  <li><code>onboarding_story_generated</code> (latency_ms), <code>onboarding_story_visibility_set</code> (visibility), <code>onboarding_story_hung</code></li>
+</ul>
+<p class="note">No PII or free-text answer content in event props; ids only. Session replay stays global per repo policy.</p>
+
+<h2 id="assets">11 · Asset manifest</h2>
+<table>
+  <tr><th>Asset</th><th>Path (prototype repo)</th><th>Use</th></tr>
+  <tr><td>Logo (stone, on light)</td><td><code>assets/wizzme-logo-stone.png</code></td><td>Phone chrome, scene 7 lockup</td></tr>
+  <tr><td>Logo (lilac, on dark)</td><td><code>assets/wizzme-logo-lilac.png</code></td><td>Doc/sidebar on dark</td></tr>
+  <tr><td>People (film cast)</td><td><code>assets/people/p-found-1.jpg</code> (Arjun) · <code>p-found-2.jpg</code> (Priya) · <code>p-found-3.jpg</code> (Meera) · <code>p-ananya.jpg</code> · <code>p-you.jpg</code></td><td>Scene 1 dots/people, scene 5 commenter, scene 6 profile head, buffer dest row</td></tr>
+  <tr><td>Story covers (film "your" stories)</td><td><code>assets/stories/story-first-year.jpg</code> · <code>story-first-salary.jpg</code> · <code>story-switching-streams.jpg</code> · <code>story-friends.jpg</code></td><td>Scenes 4, 5, 6, 11, 12, 13 (topic→art map)</td></tr>
+  <tr><td>Real-story deck covers</td><td><code>assets/stories/real-yc.jpg</code> · <code>real-campnou.jpg</code> · <code>real-firstbike.jpg</code></td><td>Scene 7 deck cards 1, 3, 4 (card 2 is quote-only by design)</td></tr>
+</table>
+<p class="note">Style contract for any new art: light, airy watercolour on white paper, one figure filling the frame, one clear action readable at a glance, distinct palette per image, no dark backgrounds.</p>
+
+<h2 id="qa">12 · Acceptance criteria and QA checklist</h2>
+<ul>
+  <li>Film: every scene follows the one-moving-thing rule; scene 3's typing completes before its closing line; scene 5 comment is fully readable before advance; scene 6→7 brand hands over (no abrupt blink); scene 7 order is PRESENTING → logo → all three subtitles → caption → cards → canvas → CTA.</li>
+  <li>Topics: CTA visually disabled at zero picks; single pick lands directly in answering with the right topic in the hero; returning restores picks; cap at 4 enforced.</li>
+  <li>Answering: 3 steps then buffer; skip skips a question only; progress bar reflects steps; chrome hidden.</li>
+  <li>Buffer: what is painted is the cover that is revealed; generation latency masked (never a spinner).</li>
+  <li>Reveal: visibility menu works and persists; title echoes the user's first answer; "Hang it on my profile" persists and exits onboarding.</li>
+  <li>All data screens handle loading / empty / error states per repo standards (Skeleton, EmptyState, ErrorState).</li>
+  <li>Responsive at 375px and 1280px; touch targets ≥44px; visible focus states; <code>prefers-reduced-motion</code> respected; no console errors; every screen registered in <code>screens.ts</code>; events fire per §10.</li>
+  <li>Copy: no em dashes, no competitor names, verbatim quotes on deck cards, singular/plural correct ("1 story").</li>
+</ul>
+
+<h2 id="open">13 · Open items and flags</h2>
+<ul>
+  <li><b>Deck consent:</b> confirm the four authors are fine appearing on a pre-signup marketing surface (all four stories are public; this is policy, not tech).</li>
+  <li><b>Cover pipeline:</b> v1 topic→art mapping ships with 4+3 fixed paintings; per-story generated covers are v2. Free-text topics need a default cover.</li>
+  <li><b>Voice/photo answers:</b> mic + attach buttons exist in the answering bar; wire to existing capture or ship disabled in v1.</li>
+  <li><b>Film delivery decision:</b> GSAP-in-React vs pre-rendered video. GSAP keeps tap-to-advance and crisp text; video is cheaper to maintain. Prototype timings transfer either way.</li>
+  <li><b>Shivani's video essay ("jugnu"):</b> the strongest content in the pool needs a video-card treatment; parked as a possible fifth deck idea.</li>
+  <li><b>RCB jersey story:</b> excluded pending founder approval (names the co-founder).</li>
+</ul>
+
+<footer>
+  Wizzme · share-first onboarding handover · prototype and this document live at
+  <a href="https://prathameshb-wizz.github.io/wizzme-onboarding-prototype/">prathameshb-wizz.github.io/wizzme-onboarding-prototype</a> ·
+  source file of record: <code>docs/superpowers/iteration/style-frames.html</code> in the main repo.
+</footer>
+</div>
+</body>
+</html>
