@@ -192,6 +192,13 @@
     box-shadow:0 2px 4px rgba(var(--deep-rgb),.06),0 22px 46px rgba(var(--deep-rgb),.22)}
   .pcov{height:150px;overflow:hidden}
   .pcov img{width:100%;height:100%;object-fit:cover;display:block}
+  .pquote{position:relative;height:150px;padding:20px 18px 0 20px;overflow:hidden}
+  .pquote .pgq2{position:absolute;top:2px;left:10px;font-family:var(--serif);font-size:74px;line-height:1;
+    color:rgba(var(--deep-rgb),.13);pointer-events:none}
+  .pquote em{position:relative;display:block;margin-top:16px;font-family:var(--serif);font-style:italic;
+    font-size:15.5px;line-height:1.42;color:#3A362F}
+  .pinit{width:24px;height:24px;border-radius:50%;background:rgba(var(--deep-rgb),.14);color:var(--ink);
+    display:inline-flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;letter-spacing:.02em}
   .pin{padding:12px 15px}
   .pkick{font-family:'Kalam',cursive;font-size:12.5px;color:var(--dim);margin-bottom:4px}
   .pti{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.26;color:#2B2926}
@@ -689,13 +696,22 @@ function scene6(){
 }
 
 /* ================= S7 · the closer: brand, one line, the posts, sign up ================= */
-const ANANYA={img:PPL+'p-ananya.jpg?v=4', name:'Ananya Joshi'};
+// real public stories from Wizzme, one per author; quote cards, no invented faces or art
 const POSTS=[
- {img:ARTS[1], kick:'Money',         ti:'The month I sent money home first',       who:ANANYA,    role:'Designer, first year in'},
- {img:ARTS[0], kick:'First job',     ti:'My first month starts Monday',            who:PEOPLE[1], role:'Two weeks from day one'},
- {img:ARTS[2], kick:'Hostel years',  ti:'What four years in a hostel taught me',   who:PEOPLE[0], role:'Final year, engineering'},
- {img:ARTS[3], kick:'Moving cities', ti:'Finding my people in a new city',         who:PEOPLE[2], role:'New to the city'}
+ {tint:'#EFE7DA', kick:'The job hunt', ti:'1,500 connection requests, 600 cold emails, one job offer',
+  q:'Things became so desperate that I would often cold-call people in my dreams.',
+  name:'Vatsal Nahata', role:'Consultant, The World Bank Group'},
+ {tint:'#E7E9E2', kick:'Resilience',   ti:"The morning I couldn't smile",
+  q:"It took a month before the faintest flicker appeared at the corner of my mouth.",
+  name:'Shivani Bajaj', role:'MBA, Stanford GSB'},
+ {tint:'#E9E4EC', kick:'Travel',       ti:'One ticket to Camp Nou',
+  q:"I just don't know how to describe that game to anybody. You just had to be there.",
+  name:'Anish Dokania', role:'AI Engineer, Allstate'},
+ {tint:'#EDE3DE', kick:'Lifestyle',    ti:'One ingredient wrecked my skin barrier',
+  q:'Any product I was applying, even normal moisturizer, was stinging.',
+  name:'Anjali Nainani', role:'Applied Scientist II, Amazon'}
 ];
+const initials=n=>n.split(' ').map(x=>x[0]).join('');
 function scene7(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
@@ -737,10 +753,10 @@ function scene7(){
     deckArea.querySelector('#deckstage').appendChild(c);return c;};
   POSTS.forEach((po,i)=>{
     cardTimes.push(at);
-    const c=mk(`<div class="pcov"><img src="${po.img}"></div>
+    const c=mk(`<div class="pquote" style="background:${po.tint}"><span class="pgq2">\u201C</span><em>${po.q}</em></div>
       <div class="pin"><div class="pkick">${po.kick}</div>
       <div class="pti">${po.ti}</div>
-      <div class="pby"><img src="${po.who.img}"><span><b>${po.who.name}</b><i>${po.role}</i></span></div></div>`);
+      <div class="pby"><span class="pinit">${initials(po.name)}</span><span><b>${po.name}</b><i>${po.role}</i></span></div></div>`);
     if(i>0){ // the peek: visible in the corner while the previous card is being read
       t.fromTo(c,{x:196,y:158,rotate:9,opacity:0,scale:.5},
         {x:158,y:124,rotate:8,opacity:.28,scale:.58,duration:.55,ease:'power2.out',immediateRender:false},at-DWELL[i-1]-.35);
