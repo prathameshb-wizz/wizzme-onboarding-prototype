@@ -82,12 +82,12 @@
 <p>This onboarding replaces the current sign-up with a <b>share-first</b> arc: a short animated film makes the case that the user's lived experience is valuable and that sharing it is effortless on Wizzme; sign-up happens at the emotional peak; and the very first in-app action is answering three light interview questions that become the user's first story ("painting"), hung on their profile before they ever see a feed.</p>
 <p>The build divides cleanly in two:</p>
 <ul>
-  <li><b>Part A — the film (scenes 1–7).</b> Pure presentation. No user data, no backend. Ship it as a GSAP timeline (the prototype's implementation can be ported nearly as-is into a React component), or pre-render it to a video/Lottie if bundle size wins. Tap/click advances; it also auto-advances.</li>
-  <li><b>Part B — the app (screens 8–13).</b> Real product: auth, profile basics, topic selection, the answering engine, story generation, and the story reveal. These need routes, state, and backend endpoints.</li>
+  <li><b>Part A: the film (scenes 1–7).</b> Pure presentation. No user data, no backend. Ship it as a GSAP timeline (the prototype's implementation can be ported nearly as-is into a React component), or pre-render it to a video/Lottie if bundle size wins. Tap/click advances; it also auto-advances.</li>
+  <li><b>Part B: the app (screens 8–13).</b> Real product: auth, profile basics, topic selection, the answering engine, story generation, and the story reveal. These need routes, state, and backend endpoints.</li>
 </ul>
 <div class="callout"><b>Locked decisions (do not re-litigate in implementation)</b>
   <ul>
-    <li>The answering engine <b>reuses the existing Sharer interview engine</b> — same chip-driven Q&amp;A interaction, restyled per screen 11 below. Do not build a second engine.</li>
+    <li>The answering engine <b>reuses the existing Sharer interview engine</b>: same chip-driven Q&amp;A interaction, restyled per screen 11 below. Do not build a second engine.</li>
     <li>Message architecture of the film (the seven-beat narrative and its copy) is final.</li>
     <li>No em dashes anywhere in copy. No competitor platform names. All example people are two-part real names.</li>
     <li>Story visibility defaults to <b>Connections</b>, changeable at the reveal (Private / Connections / Public).</li>
@@ -113,7 +113,7 @@
 <p class="note">Continuity rule that must survive implementation: scenes 3, 4, 5 are <b>one story</b> (switching streams). Scene 3 interviews you about it, scene 4 shows the card it becomes, scene 5 shows Arjun Mehta finding it. Arjun is also the first person shown in scene 1. Do not swap any of these examples independently.</p>
 
 <h2 id="film">3 · Part A · The film (scenes 1–7)</h2>
-<p>Full choreography lives in the prototype's <code>scene1()…scene7()</code> functions — each returns a fresh GSAP timeline; <code>play(n)</code> kills the current one and rebuilds. Below is what each scene must communicate and its non-negotiable beats. Durations are as tuned in the prototype; treat them as spec.</p>
+<p>Full choreography lives in the prototype's <code>scene1()…scene7()</code> functions: each returns a fresh GSAP timeline; <code>play(n)</code> kills the current one and rebuilds. Below is what each scene must communicate and its non-negotiable beats. Durations are as tuned in the prototype; treat them as spec.</p>
 <table>
   <tr><th>Scene</th><th>Copy (final)</th><th>Non-negotiable beats</th></tr>
   <tr><td>1</td><td>"Did you know?" → "Your life has answers / people are searching for." → three people (relation line dominant, name small, question quiet italic) → "Your experience is valuable." → "Yet you rarely get to share it."</td><td>The opening line is read <b>alone</b>; four face dots appear only ~1.5s after it lands, beneath it. Each person appears alone and leaves before the next. The two closing claims each stand alone on screen.</td></tr>
@@ -130,7 +130,7 @@
 <table>
   <tr><th>#</th><th>Card</th><th>Author</th><th>Story ID (production content source)</th><th>Treatment</th></tr>
   <tr><td>1</td><td><b>What YC actually feels like from inside</b> · Startups · "If you're worried about food and rent, you cannot build a company."</td><td>Aryan Agarwal · Co-Founder, Yenmo (YC W24)</td><td><code>ccd2d786-970f-4ec2-a543-b18a6d46b10b</code></td><td>Painted cover <code>real-yc.jpg</code></td></tr>
-  <tr><td>2</td><td><b>The morning I couldn't smile</b> · Resilience · "It took a month before the faintest flicker appeared at the corner of my mouth."</td><td>Shivani Bajaj · MBA, Stanford GSB</td><td><code>bc0846df-20dc-4e66-afe7-d8ff70b2e3b2</code></td><td><b>Quote-only card</b> (tinted paper, ghost quote mark, no image) — intentional, do not add art</td></tr>
+  <tr><td>2</td><td><b>The morning I couldn't smile</b> · Resilience · "It took a month before the faintest flicker appeared at the corner of my mouth."</td><td>Shivani Bajaj · MBA, Stanford GSB</td><td><code>bc0846df-20dc-4e66-afe7-d8ff70b2e3b2</code></td><td><b>Quote-only card</b> (tinted paper, ghost quote mark, no image): intentional, do not add art</td></tr>
   <tr><td>3</td><td><b>One ticket to Camp Nou</b> · Travel · "I just don't know how to describe that game to anybody. You just had to be there."</td><td>Anish Dokania · AI Engineer, Allstate</td><td><code>cb6006eb-5dbb-47f9-8d10-daab77b91bc0</code></td><td>Painted cover <code>real-campnou.jpg</code></td></tr>
   <tr><td>4</td><td><b>My first bike, chosen on seating comfort</b> · Everyday · "I've ridden a max of 150-200 km one way, and there was no issue with comfort."</td><td>Pranay Kumar Urma · Product, Glance</td><td><code>4743ebbb-95f0-46d8-9cbc-2e9a0b91be2e</code></td><td>Painted cover <code>real-firstbike.jpg</code></td></tr>
 </table>
@@ -153,7 +153,7 @@
 <p>"What could you talk about without preparing?" + "Pick a few. One story now, the rest stay saved."</p>
 <ul>
   <li>Grid (2-col) of 8 topic cards, each title + sub: College days (the friends, the chaos) · Office life (first jobs, bosses, growth) · Moving cities (flats, food, finding your feet) · Relationships (friends, dating, family) · Money (salaries, saving, mistakes) · Travel (solo trips, plans gone wrong) · Getting fit (around everything else) · Interests (startups, sports, hobbies).</li>
-  <li>Free-text input "Something else? Type it here" — non-empty counts as a selection.</li>
+  <li>Free-text input "Something else? Type it here": non-empty counts as a selection.</li>
   <li>Selection cap: 4. CTA is disabled AND visually muted (grey fill, not just opacity) until ≥1 selection; label switches "Pick a few to continue" → "Continue with N".</li>
   <li><b>Routing rule:</b> exactly 1 selection → set it as the chosen topic and go <b>directly to screen 11</b> (skip 10). 2+ → screen 10.</li>
   <li><b>State restore:</b> navigating back to this screen re-renders prior selections as selected and the CTA live.</li>
@@ -171,15 +171,15 @@
   <li><b>Sheet (#FAF7F3, radius 28):</b> grab handle, orb + Kalam coaching line rotating per step: "Say it just how it comes out." / "No need to polish it." / "Last one, then I shape it.", question (serif, 23px), help line "Pick the one that fits best.", answer chips (44px min height; tap → selected grey state → 650ms pause → next question, or → screen 12 after step 3).</li>
   <li><b>Bar:</b> mic and attachment circle buttons (voice/photo answers, wire to existing capabilities or stub), right-aligned "Skip" (skips the current question, not the flow).</li>
   <li><b>First questions per topic (final copy):</b> college: "What is the one college memory you still tell people about?" · work: "What caught you off guard in your first job?" · moving: "What did nobody warn you about moving to a new city?" · rel: "What has dating in your twenties actually taught you?" · money: "What did your first salary actually teach you?" · travel: "What did your first solo trip change in you?" · fitness: "What finally made fitness stick for you?" · interests: "What could you talk about for hours without notes?" · free text: "What is the story you tell most often about this?" <b>Follow-ups:</b> "What made it stick with you?" then "And has that changed how you act now?"</li>
-  <li>Phone chrome (brand + film dashes) is hidden on this screen and all later ones — the hero owns the top.</li>
+  <li>Phone chrome (brand + film dashes) is hidden on this screen and all later ones: the hero owns the top.</li>
 </ul>
 
 <h3>Screen 12 · Buffer (story is being made)</h3>
 <p>~9.5s, three acts under a status line with a pulsing dot; this is where the backend generates the story and cover.</p>
 <ol>
-  <li><b>"Reading what you painted"</b> — the user's three answers laid down as small rotated cards.</li>
-  <li><b>"Painting your cover"</b> — answers sweep away; an empty canvas takes colour washes that <b>resolve into a blurred version of the actual final cover</b> (blur 16→5). The thing being painted must be the thing revealed on screen 13.</li>
-  <li><b>"Finding who needs it"</b> — you → arrow → three avatars row.</li>
+  <li><b>"Reading what you painted"</b>: the user's three answers laid down as small rotated cards.</li>
+  <li><b>"Painting your cover"</b>: answers sweep away; an empty canvas takes colour washes that <b>resolve into a blurred version of the actual final cover</b> (blur 16→5). The thing being painted must be the thing revealed on screen 13.</li>
+  <li><b>"Finding who needs it"</b>: you → arrow → three avatars row.</li>
 </ol>
 <p class="note">Treat the animation as a minimum-duration mask over the real generation call: if generation finishes early, hold to act timing; if late, loop act 2 washes until ready.</p>
 
@@ -208,7 +208,7 @@
   <tr><td><b>Manrope</b> (sans)</td><td>UI: buttons, chips, forms, labels, metadata</td></tr>
   <tr><td><b>Kalam</b> (handwritten)</td><td>Accents only: "Did you know?", story bylines, coaching lines, canvas-empty card, wordmark-adjacent moments</td></tr>
 </table>
-<p class="note">In the product codebase these must map to the design-system scale in <code>DESIGN_SYSTEM.md</code> (semantic tokens, type scale classes) — no arbitrary values; the hex values above are the prototype's and should be reconciled with existing tokens rather than duplicated.</p>
+<p class="note">In the product codebase these must map to the design-system scale in <code>DESIGN_SYSTEM.md</code> (semantic tokens, type scale classes): no arbitrary values; the hex values above are the prototype's and should be reconciled with existing tokens rather than duplicated.</p>
 
 <h2 id="components">7 · Component inventory</h2>
 <table>
@@ -225,7 +225,7 @@
   <tr><td>Primary/disabled CTA</td><td><code>.cta</code>, <code>.cta.dim</code></td><td>Disabled = grey fill, not opacity (survives entry animations)</td></tr>
   <tr><td>Cost card</td><td><code>.cst</code></td><td>Counter + step chips (film only)</td></tr>
 </table>
-<p class="note">In production, build these on shadcn/ui primitives per repo rules (Button, Dialog for the visibility menu, Form + zod for screen 8) — the prototype's DOM is reference for look and behavior, not for architecture.</p>
+<p class="note">In production, build these on shadcn/ui primitives per repo rules (Button, Dialog for the visibility menu, Form + zod for screen 8): the prototype's DOM is reference for look and behavior, not for architecture.</p>
 
 <h2 id="motion">8 · Motion spec</h2>
 <ul>
@@ -233,7 +233,7 @@
   <li><b>Signature easings:</b> entrances <code>power2/power3.out</code> or <code>back.out(1.3–1.6)</code>; exits <code>power2.in</code>; drifts linear. Deck cards: peek at corner (opacity .28) → enter (.85s) → linear drift through centre (2.4s) → accelerate out (.75s).</li>
   <li><b>One-moving-thing rule:</b> at any moment exactly one element should demand the eye. This is deliberate throughout scenes 1 and 7 and must be preserved in any re-implementation.</li>
   <li><b>Auto-advance:</b> film scenes advance on tap and automatically (1300ms after scene end; scene 5 holds 5000ms; scene 6→7 hands over in 400ms). Arrow keys navigate everywhere.</li>
-  <li><b>Reduced motion:</b> the product build must respect <code>prefers-reduced-motion</code> via <code>useReducedMotion()</code> from <code>@/lib/animations</code> — film falls back to static frames with tap-through; app screens drop non-essential animation.</li>
+  <li><b>Reduced motion:</b> the product build must respect <code>prefers-reduced-motion</code> via <code>useReducedMotion()</code> from <code>@/lib/animations</code>: film falls back to static frames with tap-through; app screens drop non-essential animation.</li>
 </ul>
 
 <h2 id="backend">9 · Backend and data requirements</h2>
@@ -244,7 +244,7 @@
   <tr><td>Topic selection</td><td>Persist up to 4 topics + optional free-text topic; mark one as active</td><td><code>src/config/pilotTopics.ts</code> (pilot topic config)</td></tr>
   <tr><td>Interview session</td><td>Start session (topic) → serve Q1 + follow-ups → store answers (chip choice or free text/voice). Reuse Sharer interview engine + its persistence</td><td>Sharer engine; <code>backend_services/app/routes/pilot_routes.py</code> + <code>public/pilot/participants.json</code> from the pilot phase</td></tr>
   <tr><td>Story generation</td><td>Compose title (from answer 1) + body from Q&amp;A via LLM; per repo rules any Claude client uses <code>max_retries=3</code>, <code>timeout=90</code></td><td>agents layer (LangGraph)</td></tr>
-  <tr><td>Cover art</td><td>Watercolour-style cover per topic. v1: fixed topic→art mapping (as prototype). v2: generated per story. Buffer screen masks latency (min ~9.5s, loop act 2 if slower)</td><td>—</td></tr>
+  <tr><td>Cover art</td><td>Watercolour-style cover per topic. v1: fixed topic→art mapping (as prototype). v2: generated per story. Buffer screen masks latency (min ~9.5s, loop act 2 if slower)</td><td>:</td></tr>
   <tr><td>Visibility</td><td>Story visibility enum private/connections/public, default connections, set at reveal</td><td>story model</td></tr>
   <tr><td>Deck content</td><td>Curated list of 4 story IDs (see §4) served to the pre-signup screen; public stories only</td><td>stories table</td></tr>
   <tr><td>Metrics glyphs</td><td>Citations + appreciations counts per story (already platform concepts) for profile tiles</td><td>existing counters</td></tr>
