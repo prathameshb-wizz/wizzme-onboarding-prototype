@@ -424,9 +424,9 @@ const BRUSH='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke=
 const GOOGLE='<svg width="17" height="17" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 32.7 29.2 36 24 36a12 12 0 010-24c3 0 5.8 1.2 8 3l5.7-5.7A20 20 0 004 24a20 20 0 0040 0c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0124 12c3 0 5.8 1.2 8 3l5.7-5.7A20 20 0 006.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0112.7 28l-6.5 5A20 20 0 0024 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3a12 12 0 01-4.1 5.6l6.2 5.2C40.9 35.4 44 30 44 24c0-1.3-.1-2.7-.4-4z"/></svg>';
 // question + WHY this person needs it, paired. On-point, high-demand, Indian-young-professional.
 const PEOPLE=[
- {img:PPL+'p-found-1.jpg?v=4', name:'Arjun Mehta',  ctx:'Your junior from college', q:'Masters abroad, or a job here first?'},
- {img:PPL+'p-found-2.jpg?v=4', name:'Priya Nair',  ctx:'About to start where you started',            q:'How do I not mess up my first month?'},
- {img:PPL+'p-found-3.jpg?v=4', name:'Meera Kulkarni',  ctx:'Just moved to your city',        q:'Where do you actually meet people here?'}
+ {img:PPL+'p-found-1.jpg?v=4', name:'Arjun',  ctx:'Your junior from college', q:'Masters abroad, or a job here first?'},
+ {img:PPL+'p-found-2.jpg?v=4', name:'Priya',  ctx:'Starting her first job in two weeks',            q:'How do I not mess up my first month?'},
+ {img:PPL+'p-found-3.jpg?v=4', name:'Meera',  ctx:'Just moved to your city',        q:'Where do you actually meet people here?'}
 ];
 const DOUBTS=['will it sound polished?','who am I to say this?','will the right people even see it?'];
 const ART='assets/stories/story-first-year.jpg?v=2';
@@ -491,10 +491,8 @@ function scene1(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
 
-  const lead=el('',`<div class="lead">${words('Did you know?')}</div>`,206);
-  const open1=el('',`<div class="say" style="font-size:23px">${words('Your life has answers')}<br/>${words('people are searching for.')}</div>`,254);
-  wordsIn(t,lead,.2,.08);
-  wordsIn(t,open1,'>+.25',.07);
+  const open1=el('',`<div class="say" style="font-size:23px">${words('Your life has answers')}<br/>${words('people are searching for.')}</div>`,238);
+  wordsIn(t,open1,.3,.07);
 
   const DOTIMGS=[PEOPLE[0].img,PEOPLE[1].img,PEOPLE[2].img,PPL+'p-ananya.jpg?v=4'];
   const dots=[[-96,118],[-33,96],[33,96],[96,118]].map((p,i)=>{
@@ -509,7 +507,7 @@ function scene1(){
     t.fromTo(d.querySelector('.ping'),{scale:.5,opacity:.6},{scale:2.0,opacity:0,duration:.8,ease:'power1.out'},at);
   });
   t.addLabel('claimHold','>+0.9');
-  t.to([lead,open1],{opacity:0,y:-16,duration:.45,ease:'power2.in'},'claimHold');
+  t.to(open1,{opacity:0,y:-16,duration:.45,ease:'power2.in'},'claimHold');
   // the searchers become a person: the group glides to where the first face will appear
   dots.forEach((d,i)=>{
     t.to(d,{x:0,y:-176,scale:.35,opacity:0,duration:.55,ease:'power2.in',delay:i*.04},'claimHold');
@@ -557,20 +555,26 @@ function scene2(){
   const cost=el('','',236);
   cost.innerHTML=`<div class="cst">
     <div class="cst-h">One post, written properly</div>
-    <div class="cst-t"><span id="cstN">4</span><span class="cst-u">min</span></div>
-    <div class="cst-l">${['find the thread','structure it','write it','rewrite it','post it']
+    <div class="cst-t"><span id="cstN">1</span><span class="cst-u">min</span></div>
+    <div class="cst-l">${['decide what to share','find the words','write it','rewrite it','post and hope']
       .map(x=>`<span>${x}</span>`).join('')}</div>
   </div>`;
   t.fromTo(cost,{opacity:0,y:22},{opacity:1,y:0,duration:.6,ease:'power3.out'},1.0);
-  t.fromTo(cost.querySelectorAll('.cst-l span'),{opacity:0,y:8},{opacity:1,y:0,duration:.4,stagger:.2},1.15);
-  // the number grinds upward as each step lands
-  [[4,1.6],[11,2.1],[19,2.6],[27,3.1],[34,3.6],[41,4.1],[45,4.5]].forEach(([m,at])=>{
+  // the clock grinds upward continuously; each step chip lands the moment its minutes begin,
+  // so the labels READ as where the time goes: 0-5 deciding, 5-12 finding words,
+  // 12-27 writing, 27-42 rewriting, 42-45 posting
+  [[1,1.35],[3,1.7],[5,2.05],[8,2.4],[12,2.75],[16,3.1],[20,3.45],[24,3.8],[27,4.15],
+   [31,4.5],[35,4.85],[39,5.2],[42,5.55],[45,5.9]].forEach(([m,at])=>{
     t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=m;},null,at);
   });
-  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},4.5);
+  const chips=cost.querySelectorAll('.cst-l span');
+  [[0,1.35],[1,2.05],[2,2.75],[3,4.15],[4,5.55]].forEach(([i,at])=>{
+    t.fromTo(chips[i],{opacity:0,y:8},{opacity:1,y:0,duration:.4},at);
+  });
+  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},5.9);
 
   const sayEl=el('',`<div class="say" style="font-size:22px">${words('So it stays in your *head*.')}</div>`,568);
-  wordsIn(t,sayEl,5.6,.09);
+  wordsIn(t,sayEl,6.9,.09);
   t.addLabel('end','>+2.2');
   return t;
 }
@@ -659,7 +663,7 @@ function scene5(){
     <div class="ti">Why I switched streams and never looked back</div></div></div>`,300);
   t.fromTo(res,{opacity:0,y:16,scale:.96},{opacity:1,y:0,scale:1,duration:.55,ease:'back.out(1.3)'},2.5);
   const conv=el('',`<div class="convrow rt">
-     <span class="cvb rt"><b>Arjun Mehta \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
+     <span class="cvb rt"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
      <img src="${PEOPLE[0].img}"></div>`,552);
   // granular: the reply types itself, so the viewer reads at typing speed instead of
   // catching a block that appeared and left
@@ -700,16 +704,16 @@ function scene6(){
 const POSTS=[
  {img:'assets/stories/real-yc.jpg', tint:'#EFE7DA', kick:'Startups',   ti:'What YC actually feels like from inside',
   q:"If you're worried about food and rent, you cannot build a company.",
-  name:'Aryan Agarwal', role:'Co-Founder, Yenmo (YC W24)'},
+  name:'Aryan', role:'Co-Founder, Yenmo (YC W24)'},
  {tint:'#E7E9E2', kick:'Resilience', ti:"The morning I couldn't smile",
   q:"It took a month before the faintest flicker appeared at the corner of my mouth.",
-  name:'Shivani Bajaj', role:'MBA, Stanford GSB'},
+  name:'Shivani', role:'MBA, Stanford GSB'},
  {img:'assets/stories/real-campnou.jpg', tint:'#E9E4EC', kick:'Travel',     ti:'One ticket to Camp Nou',
   q:"I just don't know how to describe that game to anybody. You just had to be there.",
-  name:'Anish Dokania', role:'AI Engineer, Allstate'},
+  name:'Anish', role:'AI Engineer, Allstate'},
  {img:'assets/stories/real-firstbike.jpg', tint:'#EDE3DE', kick:'Everyday',   ti:'My first bike, chosen on seating comfort',
   q:"I've ridden a max of 150-200 km one way, and there was no issue with comfort.",
-  name:'Pranay Kumar Urma', role:'Product, Glance'}
+  name:'Pranay', role:'Product, Glance'}
 ];
 const initials=n=>n.split(' ').map(x=>x[0]).join('');
 function scene7(){
@@ -737,8 +741,8 @@ function scene7(){
   });
   // a quiet caption over the deck, at the start only
   const decklbl=el('',`<div class="tagline" style="font-size:9.5px">A FEW STORIES ON WIZZME</div>`,172);
-  t.fromTo(decklbl,{opacity:0},{opacity:.7,duration:.5},9.3);
-  t.to(decklbl,{opacity:0,duration:.5},14.4);
+  t.fromTo(decklbl,{opacity:0},{opacity:.7,duration:.5},3.5);
+  t.to(decklbl,{opacity:0,duration:.5},8.2);
 
   // the posts pass once, each with its own dwell: the first moves on quickly, the second
   // stays to be read, then the empty canvas lands and STAYS as the reason to sign up
@@ -747,7 +751,7 @@ function scene7(){
   // opacity (a visible queue), then glides up the diagonal to take its place. Entry has a
   // soft overshoot settle; exit accelerates away. Times are precomputed so taps can seek.
   const DWELL=[2.4,2.4,2.4,2.4];
-  const cardTimes=[]; let at=9.8;
+  const cardTimes=[]; let at=3.9;
   const mk=(html)=>{const c=document.createElement('div');c.className='post';c.innerHTML=html;
     gsap.set(c,{opacity:0});
     deckArea.querySelector('#deckstage').appendChild(c);return c;};
@@ -779,8 +783,8 @@ function scene7(){
   const canvasAt=at+.6, ctaAt=at+1.3;
   // tap the deck to jump to the next story; a small hint says so, once
   const hint=el('',`<div class="deckhint">tap to see the next one</div>`,532);
-  t.fromTo(hint,{opacity:0},{opacity:.8,duration:.5},11.1);
-  t.to(hint,{opacity:0,duration:.4},15.5);
+  t.fromTo(hint,{opacity:0},{opacity:.8,duration:.5},5.2);
+  t.to(hint,{opacity:0,duration:.4},9.6);
   deckArea.addEventListener('click',e=>{
     e.stopPropagation();
     gsap.to(hint,{opacity:0,duration:.2});
@@ -794,7 +798,7 @@ function scene7(){
     e.stopPropagation();
     if(tl.time()<canvasAt) tl.seek(canvasAt);
   });
-  t.fromTo(skip,{opacity:0},{opacity:1,duration:.4},10.3);
+  t.fromTo(skip,{opacity:0},{opacity:1,duration:.4},4.4);
 
   // the ask arrives only after the canvas has made its case
   const cta=el('',`<div class="ctablock">

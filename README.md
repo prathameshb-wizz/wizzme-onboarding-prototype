@@ -27,9 +27,9 @@ The prototype is one self-contained HTML file: all CSS, all GSAP timelines (scen
 
 | File | Character | Used in |
 |---|---|---|
-| `p-found-1.jpg` | **Arjun Mehta**, "Your junior from college", asks "Masters abroad, or a job here first?" | Scene 1 (dot + person 1) · scene 5 (he comments on your story) · scene 12 (destination row) |
-| `p-found-2.jpg` | **Priya Nair**, "About to start where you started" | Scene 1 (dot + person 2) · scene 12 |
-| `p-found-3.jpg` | **Meera Kulkarni**, "Just moved to your city" | Scene 1 (dot + person 3) · scene 12 |
+| `p-found-1.jpg` | **Arjun**, "Your junior from college", asks "Masters abroad, or a job here first?" | Scene 1 (dot + person 1) · scene 5 (he comments on your story) · scene 12 (destination row) |
+| `p-found-2.jpg` | **Priya**, "Starting her first job in two weeks" | Scene 1 (dot + person 2) · scene 12 |
+| `p-found-3.jpg` | **Meera**, "Just moved to your city" | Scene 1 (dot + person 3) · scene 12 |
 | `p-ananya.jpg` | fourth searcher dot (no speaking role) | Scene 1 dots |
 | `p-you.jpg` | **You** (the viewer's stand-in) | Scene 6 profile head · scene 11 answering avatar · scene 12 |
 
@@ -48,10 +48,10 @@ The prototype is one self-contained HTML file: all CSS, all GSAP timelines (scen
 
 | File | Card |
 |---|---|
-| `real-yc.jpg` | Aryan Agarwal — "What YC actually feels like from inside" |
-| `real-campnou.jpg` | Anish Dokania — "One ticket to Camp Nou" |
-| `real-firstbike.jpg` | Pranay Kumar Urma — "My first bike, chosen on seating comfort" |
-| *(no image — intentional)* | Shivani Bajaj — "The morning I couldn't smile" is a quote-only card by design; do not add art |
+| `real-yc.jpg` | Aryan (Aryan Agarwal) — "What YC actually feels like from inside" |
+| `real-campnou.jpg` | Anish (Anish Dokania) — "One ticket to Camp Nou" |
+| `real-firstbike.jpg` | Pranay (Pranay Kumar Urma) — "My first bike, chosen on seating comfort" |
+| *(no image — intentional)* | Shivani (Shivani Bajaj) — "The morning I couldn't smile" is a quote-only card by design; do not add art |
 
 ### Art style contract (for any new covers)
 
