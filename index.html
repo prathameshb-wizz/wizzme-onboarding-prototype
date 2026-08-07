@@ -88,7 +88,7 @@
   /* the relation is the headline; the question supports it quietly */
   .prel{font-family:var(--serif);font-size:21px;line-height:1.25;color:var(--ink);margin-top:16px;max-width:280px;text-align:center}
   .pname{font-size:12.5px;font-weight:600;color:var(--faint);margin-top:5px}
-  .pq{position:relative;max-width:270px;font-family:var(--serif);font-style:italic;font-size:15.5px;
+  .pq{position:relative;max-width:270px;font-family:var(--serif);font-style:italic;font-size:17px;
     line-height:1.4;color:var(--dim);text-align:center}
   .pgq{position:absolute;left:-18px;top:-10px;font-size:40px;line-height:1;color:rgba(var(--deep-rgb),.14);font-family:var(--serif);font-style:normal}
   /* the cost card: one post, itemised */
@@ -500,7 +500,7 @@ function scene1(){
     gsap.set(d,{x:p[0],y:p[1],opacity:0,scale:.4});
     return d;
   });
-  t.addLabel('evidence','>+1.45');
+  t.addLabel('evidence','>+.75');
   dots.forEach((d,i)=>{
     const at='evidence+='+(0.15+i*0.16);
     t.fromTo(d,{opacity:0,y:'+=16',scale:.4},{opacity:.95,y:'-=16',scale:1,duration:.42,ease:'back.out(1.6)'},at);
@@ -560,21 +560,23 @@ function scene2(){
       .map(x=>`<span>${x}</span>`).join('')}</div>
   </div>`;
   t.fromTo(cost,{opacity:0,y:22},{opacity:1,y:0,duration:.6,ease:'power3.out'},1.0);
-  // the clock grinds upward continuously; each step chip lands the moment its minutes begin,
-  // so the labels READ as where the time goes: 0-5 deciding, 5-12 finding words,
-  // 12-27 writing, 27-42 rewriting, 42-45 posting
-  [[1,1.35],[3,1.7],[5,2.05],[8,2.4],[12,2.75],[16,3.1],[20,3.45],[24,3.8],[27,4.15],
-   [31,4.5],[35,4.85],[39,5.2],[42,5.55],[45,5.9]].forEach(([m,at])=>{
-    t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=m;},null,at);
-  });
+  // lockstep: a step label lands, THEN the clock adds exactly that step's minutes,
+  // pauses, and the next label repeats the beat. 5 + 7 + 15 + 15 + 3 = 45.
+  const PH=[['decide',1,5],['words',5,12],['write',12,27],['rewrite',27,42],['post',42,45]];
   const chips=cost.querySelectorAll('.cst-l span');
-  [[0,1.35],[1,2.05],[2,2.75],[3,4.15],[4,5.55]].forEach(([i,at])=>{
-    t.fromTo(chips[i],{opacity:0,y:8},{opacity:1,y:0,duration:.4},at);
+  let T=1.35;
+  PH.forEach(([_,from,to],i)=>{
+    t.fromTo(chips[i],{opacity:0,y:8},{opacity:1,y:0,duration:.35},T);
+    for(let k=1;k<=3;k++){
+      const v=Math.round(from+(to-from)*k/3);
+      t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=v;},null,T+.2+k*.18);
+    }
+    T+=1.2;
   });
-  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},5.9);
+  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},T-.35);
 
   const sayEl=el('',`<div class="say" style="font-size:22px">${words('So it stays in your *head*.')}</div>`,568);
-  wordsIn(t,sayEl,6.9,.09);
+  wordsIn(t,sayEl,T+.6,.09);
   t.addLabel('end','>+2.2');
   return t;
 }
