@@ -567,10 +567,9 @@ function scene2(){
   let T=1.35;
   PH.forEach(([_,from,to],i)=>{
     t.fromTo(chips[i],{opacity:0,y:8},{opacity:1,y:0,duration:.35},T);
-    for(let k=1;k<=3;k++){
-      const v=Math.round(from+(to-from)*k/3);
-      t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=v;},null,T+.2+k*.18);
-    }
+    // one clean jump per step, with a small pulse so the change registers
+    t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=to;},null,T+.45);
+    t.fromTo(cost.querySelector('.cst-t'),{scale:1.07},{scale:1,duration:.3},T+.45);
     T+=1.2;
   });
   t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},T-.35);
