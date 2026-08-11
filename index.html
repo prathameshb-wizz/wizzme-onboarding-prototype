@@ -176,12 +176,25 @@
   .pfa{width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #FBF9F4,0 4px 12px rgba(var(--deep-rgb),.18)}
   .pfn b{display:block;font-size:15px;font-weight:700;color:var(--ink);text-align:left}
   .pfn i{display:block;font-style:normal;font-size:12px;color:var(--faint);margin-top:2px;text-align:left;font-variant-numeric:tabular-nums}
-  .pfg{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:322px}
+  .elL{align-items:flex-start;left:33px;right:33px}
+  .stoc.hero{width:324px;border-radius:20px}
+  .hmeta{display:flex;align-items:center;gap:3px;padding:0 16px 12px;font-size:11px;font-weight:600;
+    color:rgba(var(--deep-rgb),.42);font-variant-numeric:tabular-nums}
+  .hmeta svg{width:12px;height:12px;fill:rgba(var(--deep-rgb),.32)}
+  .hmeta svg+svg{margin-left:8px}
+  .cmtrow{display:flex;gap:9px;align-items:flex-start;padding:11px 16px 13px;
+    border-top:1px solid rgba(var(--deep-rgb),.08);overflow:hidden}
+  .cmtrow img{width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0}
+  .cmtb{text-align:left;min-width:0}
+  .cmtb b{display:block;font-family:var(--serif);font-size:10.5px;color:var(--faint);font-weight:700;margin-bottom:2px}
+  .cmtb span{font-size:12.5px;line-height:1.4;color:var(--ink)}
+  .srch.paper{background:#F7F3EC;border:1px solid rgba(var(--deep-rgb),.1);box-shadow:none}
+  .pfg{display:grid;grid-template-columns:156px 156px;gap:12px;width:324px}
   .pft{display:flex;flex-direction:column;border-radius:13px;overflow:hidden;background:#FBF9F4;text-align:left;
-    box-shadow:0 5px 16px rgba(var(--deep-rgb),.12)}
-  .pft img{width:100%;height:82px;object-fit:cover;object-position:50% 30%}
+    height:143px;box-shadow:0 5px 16px rgba(var(--deep-rgb),.12)}
+  .pft img{width:100%;height:76px;object-fit:cover;object-position:50% 30%;flex-shrink:0}
   .pft em{font-style:normal;font-family:var(--serif);font-size:12px;line-height:1.28;color:var(--ink);padding:8px 10px 4px}
-  .pfx{display:flex;align-items:center;gap:3px;padding:0 10px 9px;font-size:10px;font-weight:600;
+  .pfx{display:flex;align-items:center;gap:3px;padding:0 10px 6px;font-size:10px;font-weight:600;
     color:rgba(var(--deep-rgb),.42);font-variant-numeric:tabular-nums}
   .pfx svg{width:11px;height:11px;fill:rgba(var(--deep-rgb),.32)}
   .pfx svg+svg{margin-left:7px}
@@ -620,153 +633,168 @@ function scene3(){
 }
 
 /* ================= S4 · it becomes a story ================= */
-function scene4(){
-  stage.innerHTML='';
-  const t=gsap.timeline({onComplete:done});
-  const line=el('',`<div class="say" style="font-size:24px">${words('And it becomes a story')}<br/>${words('worth *looking at*.')}</div>`,108);
-  wordsIn(t,line,.2,.08);
-  // the body arrives sentence by sentence, at reading pace, and the card then HOLDS
-  const card=el('',`<div class="stoc">
+/* ============ S4-S6 share one fixed stage ============
+   VOICE y100 (every narrative line, block-fade, never typed) ·
+   MECHANISM y176 (search, then profile head: the band hands off) ·
+   HERO y248, left-anchored at x33 so its top-left corner IS tile #1's corner. */
+const VOICE=100, MECH=176, HERO=248;
+function voiceIn(t,elm,at){
+  t.fromTo(elm,{opacity:0,y:12},{opacity:1,y:0,duration:.52,ease:'power2.out'},at);
+  const em=elm.querySelector('em');
+  if(em) t.to(em,{'--hl':1,duration:.01},at+.75);
+}
+function voiceOut(t,elm,at){
+  t.to(elm,{opacity:0,y:-8,duration:.26,ease:'power1.in'},at);
+}
+const HERO_CARD=`<div class="stoc hero">
     <div class="cov"><img src="${ARTS[2]}"><span class="fcq">\u201D</span></div>
     <div class="in"><div class="by">Switching streams, 2022</div>
       <div class="ti">Why I switched streams and never looked back</div>
       <p><span class="bs">Everyone called it a risk.</span> <span class="bs">A semester of misery, one gut call, and two years on it is the best decision I have made.</span></p>
       <div class="rm">read more</div>
-    </div></div>`,232);
-  t.fromTo(card,{opacity:0,y:24,scale:.96},{opacity:1,y:0,scale:1,duration:.6,ease:'power3.out'},1.0);
-  t.fromTo(card.querySelector('.cov'),{clipPath:'inset(0 0 100% 0)'},{clipPath:'inset(0 0 0% 0)',duration:.8,ease:'power2.inOut'},1.2);
-  t.fromTo(card.querySelector('.by'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.6,ease:'power1.inOut'},1.9);
-  t.fromTo(card.querySelector('.ti'),{opacity:0,y:8},{opacity:1,y:0,duration:.5},2.3);
-  const bs=card.querySelectorAll('.bs');
-  t.fromTo(bs[0],{opacity:0,y:6},{opacity:1,y:0,duration:.5},2.9);
-  t.fromTo(bs[1],{opacity:0,y:6},{opacity:1,y:0,duration:.55},3.5);
-  t.fromTo(card.querySelector('.rm'),{opacity:0},{opacity:1,duration:.4},4.2);
-  // the hold is never static: the cover drifts in a slow Ken Burns at reading pace
+    </div>
+    <div class="hmeta" style="display:none"><svg viewBox="0 0 24 24"><path d="M4.9 5.5C3.1 7 2 9.2 2 11.6 2 15 4.1 17.2 6.7 17.2c2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4L4.9 5.5Zm9.6 0c-1.8 1.5-2.9 3.7-2.9 6.1 0 3.4 2.1 5.6 4.7 5.6 2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4l-4.5-.6Z"/></svg>31
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>9</div>
+    <div class="cmtrow" style="display:none"><img src="${PEOPLE[0].img}">
+      <span class="cmtb"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span><span class="cb-cur"></span></span></div>
+  </div>`;
+
+/* ================= S4 · it becomes a story ================= */
+function scene4(){
+  stage.innerHTML='';
+  const t=gsap.timeline({onComplete:done});
+  const line=el('',`<div class="say" style="font-size:24px">And it becomes a story<br/>worth <em>looking</em> at.</div>`,VOICE);
+  voiceIn(t,line,.25);
+  // the card arrives as ONE finished object; only its text is still warming in
+  const card=el('elL',HERO_CARD,HERO);
+  const sc=card.querySelector('.stoc');
   const kimg=card.querySelector('.cov img');
   gsap.set(kimg,{transformOrigin:'50% 38%'});
-  t.fromTo(kimg,{scale:1},{scale:1.09,duration:5.6,ease:'none'},1.3);
-  t.to({},{duration:2.6},4.6);
+  gsap.set(card.querySelectorAll('.by,.ti,.bs,.rm'),{opacity:0});
+  t.fromTo(card,{opacity:0,y:16,scale:.985},{opacity:1,y:0,scale:1,duration:.6,ease:'power3.out'},1.05);
+  t.fromTo(kimg,{filter:'blur(8px)',scale:1.06},{filter:'blur(0px)',scale:1,duration:.5,ease:'power2.out'},1.2);
+  t.to(card.querySelector('.by'),{opacity:1,duration:.24},1.5);
+  t.fromTo(card.querySelector('.ti'),{opacity:0,y:6},{opacity:1,y:0,duration:.3},1.65);
+  const bs=card.querySelectorAll('.bs');
+  t.to(bs[0],{opacity:1,duration:.26},1.95);
+  t.to(bs[1],{opacity:1,duration:.26},2.35);
+  t.to(card.querySelector('.rm'),{opacity:.4,duration:.2},2.7);
+  // the hold breathes: Ken Burns runs to the cut and CONTINUES into scene 5
+  t.fromTo(kimg,{scale:1},{scale:1.045,duration:4.9,ease:'none'},1.3);
+  t.to({},{duration:.1},6.1);
   return t;
 }
 
-/* ================= S5 · match cut: the story card transforms in place ================= */
+/* ================= S5 · the story is found, in place ================= */
 function scene5(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
-  // open on scene 4's exact final frame so the cut is invisible
-  const line4=el('',`<div class="say" style="font-size:24px">${words('And it becomes a story')}<br/>${words('worth *looking at*.')}</div>`,108);
-  const em4=line4.querySelector('em'); if(em4) em4.style.setProperty('--hl',1);
-  const card=el('',`<div class="stoc">
-    <div class="cov"><img src="${ARTS[2]}"><span class="fcq">\u201D</span></div>
-    <div class="in"><div class="by">Switching streams, 2022</div>
-      <div class="ti">Why I switched streams and never looked back</div>
-      <p>Everyone called it a risk. A semester of misery, one gut call, and two years on it is the best decision I have made.</p>
-      <div class="rm">read more</div>
-    </div></div>`,232);
+  // match cut: scene 4's final frame, Ken Burns mid-flight, not restarting
+  const line4=el('',`<div class="say" style="font-size:24px">And it becomes a story<br/>worth <em style="--hl:1">looking</em> at.</div>`,VOICE);
+  const card=el('elL',HERO_CARD,HERO);
   const sc=card.querySelector('.stoc');
-  gsap.set(card.querySelector('.cov img'),{scale:1.09,transformOrigin:'50% 38%'});
-
-  // 1 · the top goes quiet
-  t.to(line4,{opacity:0,y:-14,duration:.45,ease:'power2.in'},.3);
-  // 2 · the search arrives where the headline was, and types
-  const srch=el('',`<div class="srch"><span class="si">\u2315</span><span class="st" id="srchT"></span></div>`,108);
-  t.fromTo(srch,{opacity:0,y:-12},{opacity:1,y:0,duration:.5},.95);
+  const kimg=card.querySelector('.cov img');
+  gsap.set(card.querySelector('.rm'),{opacity:.4});
+  gsap.set(kimg,{scale:1.045,transformOrigin:'50% 38%'});
+  t.fromTo(kimg,{scale:1.045},{scale:1.08,duration:6.8,ease:'none'},0);
+  // voice swap, alone
+  voiceOut(t,line4,.2);
+  const lineA=el('',`<div class="say" style="font-size:24px">Your story finds<br/>the <em>right</em> people.</div>`,VOICE);
+  gsap.set(lineA,{opacity:0});
+  t.set(lineA,{opacity:1},.42); gsap.set(lineA,{opacity:0});
+  voiceIn(t,lineA,.42);
+  // the mechanism, quieter than the hero
+  const srch=el('',`<div class="srch paper" style="width:324px"><span class="si">\u2315</span><span class="st" id="srchT"></span><span class="cb-cur"></span></div>`,MECH);
+  t.fromTo(srch,{opacity:0,y:-8},{opacity:1,y:0,duration:.38,ease:'power3.out'},.9);
   t.call(()=>{
     const e=document.getElementById('srchT'); if(!e) return;
-    e.innerHTML=chars('thinking of switching streams');
-    gsap.to(e.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.022});
-  },null,1.2);
-  // 3 · the story answers the search: it collapses and settles just below the bar
-  // one breath, one ease family, no pulse: text exhales first, then the space closes,
-  // then the whole card glides into place
-  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{opacity:0,duration:.32,ease:'power1.out'},2.15);
-  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{height:0,marginTop:0,duration:.7,ease:'power2.inOut'},2.35);
-  t.to(card,{top:188,duration:1.05,ease:'power2.inOut'},2.3);
-  t.to(sc,{width:280,duration:1.05,ease:'power2.inOut'},2.3);
-  t.to(sc.querySelector('.cov'),{height:128,duration:1.05,ease:'power2.inOut'},2.3);
-  t.to(sc.querySelector('.ti'),{fontSize:'14.5px',marginBottom:2,duration:1.05,ease:'power2.inOut'},2.3);
-  // 4 · the conversation begins
-  const conv=el('',`<div class="convrow rt">
-     <span class="cvb rt"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
-     <img src="${PEOPLE[0].img}"></div>`,440);
-  t.fromTo(conv,{opacity:0,x:26,y:8},{opacity:1,x:0,y:0,duration:.55,ease:'power2.out'},3.5);
+    e.innerHTML=chars('switching streams');
+    gsap.to(e.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.045});
+  },null,1.3);
+  t.to(srch.querySelector('.srch'),{backgroundColor:'#F1EBDF',duration:.18},2.25);
+  // ONE height change: the body yields to the conversation, inside the same card
+  t.to([card.querySelectorAll('.bs')[1],card.querySelector('.rm')],{opacity:0,duration:.22},2.45);
+  t.to([card.querySelectorAll('.bs')[1],card.querySelector('.rm')],{height:0,marginTop:0,display:'none',duration:.01},2.68);
   t.call(()=>{
-    const sp=conv.querySelector('.cvtxt'); if(!sp) return;
+    card.querySelector('.hmeta').style.display='flex';
+    card.querySelector('.cmtrow').style.display='flex';
+    gsap.fromTo([card.querySelector('.hmeta'),card.querySelector('.cmtrow')],{opacity:0},{opacity:1,duration:.3});
+  },null,2.7);
+  // Arjun types inside the story
+  t.call(()=>{
+    const sp=card.querySelector('.cvtxt'); if(!sp) return;
     sp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
     gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.02});
-  },null,3.7);
-  // 5 · only now, the line lands below everything, and STAYS
-  const line=el('',`<div class="say" style="font-size:22px">${words('Your story finds the *right* people.')}<br/>${words('And conversations begin.')}</div>`,556);
-  wordsIn(t,line,4.4,.07);
-  t.to({},{duration:3.6},5.2);
+  },null,3.05);
+  // the mechanism exits; its band is inherited by scene 6's profile head
+  t.to(srch,{opacity:0,y:-14,duration:.3,ease:'power2.in'},4.75);
+  // payoff line, with nothing else moving
+  voiceOut(t,lineA,5.0);
+  const lineB=el('',`<div class="say" style="font-size:24px">And conversations<br/>begin.</div>`,VOICE);
+  gsap.set(lineB,{opacity:0});
+  voiceIn(t,lineB,5.25);
+  t.to({},{duration:1.1},5.85);
   return t;
 }
 
-/* ================= S6 · story by story, a profile ================= */
+/* ================= S6 · the story is filed, on the left, where it lands ================= */
 function scene6(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
-  // ghosts of scene 5's final frame, so this cut is invisible too
-  const gsr=el('',`<div class="srch"><span class="si">\u2315</span><span class="st"></span></div>`,108);
-  const gst=gsr.querySelector('.st'); gst.innerHTML=chars('thinking of switching streams');
-  gst.querySelectorAll('.ch').forEach(c=>c.style.display='inline-block');
-  const gcv=el('',`<div class="convrow rt">
-     <span class="cvb rt"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
-     <img src="${PEOPLE[0].img}"></div>`,440);
-  const gsp=gcv.querySelector('.cvtxt'); gsp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
-  gsp.querySelectorAll('.ch').forEach(c=>c.style.display='inline-block');
-  const gln=el('',`<div class="say" style="font-size:22px">${words('Your story finds the *right* people.')}<br/>${words('And conversations begin.')}</div>`,556);
-  const gem=gln.querySelector('em'); if(gem) gem.style.setProperty('--hl',1);
-  const card=el('',`<div class="stoc" style="width:280px">
-    <div class="cov" style="height:128px"><img src="${ARTS[2]}"><span class="fcq">\u201D</span></div>
-    <div class="in"><div class="by">Switching streams, 2022</div>
-      <div class="ti" style="font-size:14.5px;margin-bottom:2px">Why I switched streams and never looked back</div>
-    </div></div>`,188);
+  // match cut: scene 5's final frame
+  const lineB=el('',`<div class="say" style="font-size:24px">And conversations<br/>begin.</div>`,VOICE);
+  const card=el('elL',HERO_CARD,HERO);
   const sc=card.querySelector('.stoc');
-  gsap.set(card.querySelector('.cov img'),{scale:1.09,transformOrigin:'50% 38%'});
+  const kimg=card.querySelector('.cov img');
+  gsap.set(kimg,{scale:1.08,transformOrigin:'50% 38%'});
+  const bs=card.querySelectorAll('.bs');
+  gsap.set([bs[1],card.querySelector('.rm')],{display:'none'});
+  card.querySelector('.hmeta').style.display='flex';
+  card.querySelector('.cmtrow').style.display='flex';
+  const gsp=card.querySelector('.cvtxt');
+  gsp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
+  gsp.querySelectorAll('.ch').forEach(c=>c.style.display='inline-block');
 
-  // 1 \u00b7 the conversation recedes; the story stays and makes room
-  t.to([gsr,gcv,gln],{opacity:0,y:-10,duration:.45,ease:'power2.in',stagger:.05},.2);
-  t.to(card,{top:380,duration:.7,ease:'power2.inOut'},.35);
-  // 2 \u00b7 the profile arrives first: who this canvas belongs to
-  const head=el('',`<div class="pfh"><img class="pfa" src="${PPL}p-you.jpg?v=4"><span class="pfn"><b>You</b><i id="pfc">1 story</i></span></div>`,196);
-  t.fromTo(head,{opacity:0,y:12},{opacity:1,y:0,duration:.5},1.05);
-  // 3 \u00b7 the story rises INTO first place on the profile
+  // 1 \u00b7 the conversation empties out of the card; the card compacts in place
+  t.to(card.querySelector('.cmtrow'),{opacity:0,duration:.24},.2);
+  t.to(card.querySelector('.cmtrow'),{height:0,paddingTop:0,paddingBottom:0,duration:.42,ease:'power2.inOut'},.44);
+  t.to(bs[0],{opacity:0,duration:.2},.44);
+  t.to(bs[0].parentElement,{height:0,marginTop:0,duration:.42,ease:'power2.inOut'},.5);
+  // 2 \u00b7 thesis first
+  voiceOut(t,lineB,.95);
+  const line=el('',`<div class="say" style="font-size:24px">Story by story,<br/>you <em>paint</em> a profile.</div>`,VOICE);
+  gsap.set(line,{opacity:0});
+  voiceIn(t,line,1.2);
+  // 3 \u00b7 who this belongs to, in the band the search left behind
+  const head=el('',`<div class="pfh"><img class="pfa" src="${PPL}p-you.jpg?v=4"><span class="pfn"><b>You</b><i id="pfc">1 story</i></span></div>`,MECH);
+  t.fromTo(head,{opacity:0,y:8},{opacity:1,y:0,duration:.38,ease:'power2.out'},1.75);
+  // the grid lives exactly where the hero lives: tile #1's corner == card's corner
   const titles=['Why I switched streams','The year I thought everyone knew more','What my first salary taught me','Friendship, after college'];
   const ART_AT=[ARTS[2],ARTS[0],ARTS[1],ARTS[3]];
   const IX=[[31,9],[14,3],[22,6],[18,4]];
-  const grid=el('',`<div class="pfg">${titles.map((x,i)=>`<span class="pft"><img src="${ART_AT[i]}"><em>${x}</em>
+  const grid=el('elL',`<div class="pfg">${titles.map((x,i)=>`<span class="pft"><img src="${ART_AT[i]}"><em>${x}</em>
     <span class="pfx"><svg viewBox="0 0 24 24"><path d="M4.9 5.5C3.1 7 2 9.2 2 11.6 2 15 4.1 17.2 6.7 17.2c2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4L4.9 5.5Zm9.6 0c-1.8 1.5-2.9 3.7-2.9 6.1 0 3.4 2.1 5.6 4.7 5.6 2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4l-4.5-.6Z"/></svg>${IX[i][0]}
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>${IX[i][1]}</span></span>`).join('')}</div>`,268);
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>${IX[i][1]}</span></span>`).join('')}</div>`,HERO);
   const tiles=grid.querySelectorAll('.pft');
   gsap.set(tiles,{opacity:0});
-  // FLIP: one long breath, every property on the same clock, so the card ARRIVES as a tile
-  // instead of swapping into one: radius, shadow, padding and the quote badge all morph too
+  // 4 \u00b7 THE fold: one uniform shrink about the top-LEFT corner. The card collapses into
+  // the left side directly; it never re-centres, never travels. Nothing else moves.
   t.call(()=>{
-    const r1=sc.getBoundingClientRect(), r2=tiles[0].getBoundingClientRect();
-    const k=stage.getBoundingClientRect().width/390;
-    const D=1.25, E='power3.inOut';
-    gsap.to(card,{x:'+='+((r2.left-r1.left)/k),y:'+='+((r2.top-r1.top)/k),duration:D,ease:E});
-    gsap.to(sc,{width:156,borderRadius:13,boxShadow:'0 5px 16px rgba(38,38,44,.12)',duration:D,ease:E});
-    gsap.to(sc.querySelector('.cov'),{height:82,duration:D,ease:E});
-    gsap.to(sc.querySelector('.ti'),{fontSize:'12px',duration:D,ease:E});
-    gsap.to(sc.querySelector('.in'),{padding:'8px 10px 10px',duration:D,ease:E});
-    // the quote badge bows out early, gently, instead of vanishing at the swap
-    gsap.to(sc.querySelector('.fcq'),{opacity:0,scale:.55,duration:.55,ease:'power1.out'});
-    gsap.to(sc.querySelector('.by'),{opacity:0,height:0,marginBottom:0,duration:.6,ease:'power2.inOut',delay:.08});
-  },null,1.7);
-  // hand over on an overlap: the tile is already there before the traveler lets go
-  t.fromTo(tiles[0],{opacity:0},{opacity:1,duration:.55,ease:'power1.inOut'},2.75);
-  t.to(card,{opacity:0,duration:.45,ease:'power1.inOut'},2.95);
-  // 4 \u00b7 the rest of the profile fills in around it
-  t.fromTo([tiles[1],tiles[2],tiles[3]],{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.45,ease:'back.out(1.3)'},3.3);
-  [2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+' stories';},null,3.45+i*.45));
-  // 5 \u00b7 the meaning arrives last
-  const line=el('',`<div class="say" style="font-size:24px">${words('Story by story,')}<br/>${words('you *paint* a profile.')}</div>`,108);
-  wordsIn(t,line,4.85,.08);
-  t.to({},{duration:1.6},5.95);
+    const h=sc.offsetHeight, target=297;
+    if(Math.abs(h-target)>2) gsap.to(sc,{paddingBottom:'+='+(target-h),duration:.2});
+  },null,1.9);
+  t.to(card.querySelector('.fcq'),{opacity:0,scale:.6,duration:.4,ease:'power1.out'},2.1);
+  t.to(sc,{scale:156/324,transformOrigin:'0 0',borderRadius:27,duration:.56,ease:'power2.inOut'},2.3);
+  // 5 \u00b7 hard cut on the landing frame: the shrunken card IS tile #1 from here on
+  t.call(()=>{ card.style.display='none'; gsap.set(tiles[0],{opacity:1}); },null,2.87);
+  t.fromTo(tiles[0],{scale:1.012,transformOrigin:'0 0'},{scale:1,duration:.12},2.88);
+  // 6 \u00b7 the rest of the profile arrives complete, count in lockstep
+  t.fromTo(tiles[1],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.15);
+  t.fromTo(tiles[2],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.47);
+  t.fromTo(tiles[3],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.79);
+  [2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+' stories';},null,3.15+i*.32));
+  t.to({},{duration:1.75},4.25);
   t.addLabel('end','>+0');
-  // soft outro: the profile recedes before the reveal, instead of a hard cut
   t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.4');
   return t;
 }
