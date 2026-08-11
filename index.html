@@ -65,6 +65,9 @@
   .dash i{display:block;height:100%;width:0%;background:var(--ink)}
 
   .stage{position:relative;z-index:2;flex:1}
+  .filmskip{position:absolute;right:20px;bottom:14px;z-index:4;font-size:12.5px;font-weight:600;
+    color:var(--faint);cursor:pointer;padding:4px 8px}
+  .filmskip:hover{color:var(--dim)}
   .taphint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12.5px;z-index:3;
     letter-spacing:.05em;color:var(--faint);animation:tp 1.9s ease-in-out infinite}
   @keyframes tp{0%,100%{opacity:.4}50%{opacity:1}}
@@ -413,6 +416,7 @@
     <div class="dashes" id="dashes"></div>
     <div class="stage" id="stage"></div>
     <div class="taphint">Tap to continue</div>
+    <div class="filmskip" id="filmskip">Skip</div>
   </div></div>
 </main>
 
@@ -432,7 +436,7 @@ const DOUBTS=['will it sound polished?','who am I to say this?','will the right 
 const ART='assets/stories/story-first-year.jpg?v=2';
 const ARTS=['story-first-year.jpg','story-first-salary.jpg','story-switching-streams.jpg','story-friends.jpg']
   .map(f=>'assets/stories/'+f+'?v=2');
-const TAGS=['AN AI-NATIVE SOCIAL NETWORK','BUILT FOR DEEPER CONNECTIONS','WHERE EXPERIENCE BECOMES WISDOM'];
+const TAGS=['BUILT FOR DEEPER CONNECTIONS','WHERE EXPERIENCE BECOMES WISDOM'];
 // generic, universal topics: what anyone could talk about without preparing
 // broad enough that anyone finds two or three of themselves here, plus a free-text catch-all
 const TOPICS=[
@@ -494,24 +498,8 @@ function scene1(){
   const open1=el('',`<div class="say" style="font-size:23px">${words('Your life has answers')}<br/>${words('people are searching for.')}</div>`,238);
   wordsIn(t,open1,.3,.07);
 
-  const DOTIMGS=[PEOPLE[0].img,PEOPLE[1].img,PEOPLE[2].img,PPL+'p-ananya.jpg?v=4'];
-  const dots=[[-96,118],[-33,96],[33,96],[96,118]].map((p,i)=>{
-    const d=el('',`<span class="ping"></span><img class="face sm" style="width:46px;height:46px" src="${DOTIMGS[i]}">`,398);
-    gsap.set(d,{x:p[0],y:p[1],opacity:0,scale:.4});
-    return d;
-  });
-  t.addLabel('evidence','>+.75');
-  dots.forEach((d,i)=>{
-    const at='evidence+='+(0.15+i*0.16);
-    t.fromTo(d,{opacity:0,y:'+=16',scale:.4},{opacity:.95,y:'-=16',scale:1,duration:.42,ease:'back.out(1.6)'},at);
-    t.fromTo(d.querySelector('.ping'),{scale:.5,opacity:.6},{scale:2.0,opacity:0,duration:.8,ease:'power1.out'},at);
-  });
-  t.addLabel('claimHold','>+0.9');
+  t.addLabel('claimHold','>+1.15');
   t.to(open1,{opacity:0,y:-16,duration:.45,ease:'power2.in'},'claimHold');
-  // the searchers become a person: the group glides to where the first face will appear
-  dots.forEach((d,i)=>{
-    t.to(d,{x:0,y:-176,scale:.35,opacity:0,duration:.55,ease:'power2.in',delay:i*.04},'claimHold');
-  });
 
   // the people: WHO they are to you leads; the question supports quietly underneath
   PEOPLE.forEach((p,i)=>{
@@ -523,7 +511,7 @@ function scene1(){
     if(i===0){ t.addLabel(label,'claimHold+=.45'); } else { t.addLabel(label,'>-.1'); }
     t.fromTo(face,{opacity:0,scale:.72,y:14},{opacity:1,scale:1,y:0,duration:i===0?.55:.4,ease:'back.out(1.6)'},label);
     t.fromTo(q,{opacity:0,y:8},{opacity:1,y:0,duration:.45},label+'+=.45');
-    t.addLabel(label+'hold','>+'+(1.25-i*.15));
+    t.addLabel(label+'hold','>+.75');
     t.to([face,q],{opacity:0,x:-46,duration:.4,ease:'power2.in'},label+'hold');
   });
 
@@ -531,11 +519,11 @@ function scene1(){
   t.addLabel('claimAt','>+.3');
   const claim=el('',`<div class="say" style="font-size:27px">${words('Your experience is *valuable*.')}</div>`,320);
   wordsIn(t,claim,'claimAt',.09);
-  t.to(claim,{opacity:0,y:-14,duration:.45,ease:'power2.in'},'claimAt+=2.6');
+  t.to(claim,{opacity:0,y:-14,duration:.45,ease:'power2.in'},'claimAt+=2.1');
 
   const turn=el('',`<div class="say" style="font-size:27px">${words('Yet you rarely get to *share* it.')}</div>`,320);
-  wordsIn(t,turn,'claimAt+=3.15',.09);
-  t.addLabel('end','>+2.4');
+  wordsIn(t,turn,'claimAt+=2.6',.09);
+  t.addLabel('end','>+2.0');
   return t;
 }
 
@@ -570,13 +558,13 @@ function scene2(){
     // one clean jump per step, with a small pulse so the change registers
     t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=to;},null,T+.45);
     t.fromTo(cost.querySelector('.cst-t'),{scale:1.07},{scale:1,duration:.3},T+.45);
-    T+=1.2;
+    T+=0.9;
   });
   t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},T-.35);
 
   const sayEl=el('',`<div class="say" style="font-size:22px">${words('So it stays in your *head*.')}</div>`,568);
-  wordsIn(t,sayEl,T+.6,.09);
-  t.addLabel('end','>+2.2');
+  wordsIn(t,sayEl,T+.5,.09);
+  t.addLabel('end','>+1.9');
   return t;
 }
 
@@ -596,30 +584,30 @@ function scene3(){
 
   const CH=['One course I loved','A semester of misery','A gut feeling'];
   const chips=el('',`<div class="chips">${CH.map((c,i)=>`<span class="chip${i===1?' pick':''}">${i===1?'<span class="tk">\u2713</span>':''}${c}</span>`).join('')}</div>`,336);
-  t.fromTo(chips.querySelectorAll('.chip'),{opacity:0,y:9},{opacity:1,y:0,duration:.4,stagger:.11},1.9);
+  t.fromTo(chips.querySelectorAll('.chip'),{opacity:0,y:9},{opacity:1,y:0,duration:.4,stagger:.11},1.7);
 
   // the pick becomes YOUR message: chips clear, the answer lands on your side of the chat
   const pick=chips.querySelector('.pick');
-  t.to(pick,{backgroundColor:'rgba(38,38,44,.13)',borderColor:'rgba(38,38,44,.2)',duration:.25},3.3);
-  t.fromTo(pick.querySelector('.tk'),{opacity:0},{opacity:1,duration:.2},3.3);
-  t.to(chips,{opacity:0,y:6,duration:.4,ease:'power2.in'},3.9);
+  t.to(pick,{backgroundColor:'rgba(38,38,44,.13)',borderColor:'rgba(38,38,44,.2)',duration:.25},2.9);
+  t.fromTo(pick.querySelector('.tk'),{opacity:0},{opacity:1,duration:.2},2.9);
+  t.to(chips,{opacity:0,y:6,duration:.4,ease:'power2.in'},3.5);
   const me1=el('crow right',`<div class="cu">A semester of misery</div>`,336);
-  t.fromTo(me1,{opacity:0,y:10,scale:.95},{opacity:1,y:0,scale:1,duration:.45,ease:'back.out(1.4)'},4.25);
+  t.fromTo(me1,{opacity:0,y:10,scale:.95},{opacity:1,y:0,scale:1,duration:.45,ease:'back.out(1.4)'},3.85);
 
   const q2=el('crow left',`<div class="cq">Was there a moment you almost went back?</div>`,400);
-  t.fromTo(q2,{opacity:0,y:-14,scale:.95},{opacity:1,y:0,scale:1,duration:.5,ease:'back.out(1.4)'},4.9);
+  t.fromTo(q2,{opacity:0,y:-14,scale:.95},{opacity:1,y:0,scale:1,duration:.5,ease:'back.out(1.4)'},4.4);
 
   // and sometimes you just say it: a typed reply, in your own words
   const me2=el('crow right',`<div class="cu"><span class="cvtxt"></span><span class="cb-cur"></span></div>`,462);
-  t.fromTo(me2,{opacity:0,y:10},{opacity:1,y:0,duration:.4},5.7);
+  t.fromTo(me2,{opacity:0,y:10},{opacity:1,y:0,duration:.4},5.1);
   t.call(()=>{
     const sp=me2.querySelector('.cvtxt'); if(!sp) return;
     sp.innerHTML=chars('yeah, pretty much every day in the first month');
-    gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.045});
-  },null,5.95);
+    gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.022});
+  },null,5.35);
   const closeLine=el('',`<div class="say" style="font-size:21px">${words('Just making sharing *effortless*.')}</div>`,548);
-  wordsIn(t,closeLine,8.4,.09);
-  t.addLabel('end','>+2.8');
+  wordsIn(t,closeLine,6.9,.09);
+  t.addLabel('end','>+2.2');
   return t;
 }
 
@@ -657,7 +645,7 @@ function scene5(){
   t.call(()=>{
     const e=document.getElementById('srchT'); if(!e) return;
     e.innerHTML=chars('thinking of switching streams');
-    gsap.to(e.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.04});
+    gsap.to(e.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.022});
   },null,1.0);
   const res=el('',`<div class="stoc mini"><div class="cov"><img src="${ARTS[2]}"><span class="fcq">\u201D</span></div>
     <div class="in"><div class="by">Switching streams, 2022</div>
@@ -672,10 +660,10 @@ function scene5(){
   t.call(()=>{
     const sp=conv.querySelector('.cvtxt'); if(!sp) return;
     sp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
-    gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.035});
+    gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.02});
   },null,3.75);
   // absolute: typing ends near 5.7s on the live clock; over eight seconds to read it
-  t.addLabel('end',14.0);
+  t.addLabel('end',9.0);
   return t;
 }
 
@@ -692,9 +680,9 @@ function scene6(){
   const grid=el('',`<div class="pfg">${titles.map((x,i)=>`<span class="pft"><img src="${ARTS[i]}"><em>${x}</em>
     <span class="pfx"><svg viewBox="0 0 24 24"><path d="M4.9 5.5C3.1 7 2 9.2 2 11.6 2 15 4.1 17.2 6.7 17.2c2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4L4.9 5.5Zm9.6 0c-1.8 1.5-2.9 3.7-2.9 6.1 0 3.4 2.1 5.6 4.7 5.6 2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4l-4.5-.6Z"/></svg>${IX[i][0]}
     <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>${IX[i][1]}</span></span>`).join('')}</div>`,286);
-  t.fromTo(grid.querySelectorAll('.pft'),{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.5,ease:'back.out(1.3)'},1.3);
-  [1,2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+(n===1?' story':' stories');},null,1.5+i*.5));
-  t.addLabel('end','>+2.2');
+  t.fromTo(grid.querySelectorAll('.pft'),{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.3,ease:'back.out(1.3)'},1.2);
+  [1,2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+(n===1?' story':' stories');},null,1.4+i*.3));
+  t.addLabel('end','>+1.8');
   // soft outro: the profile recedes before the reveal, instead of a hard cut
   t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.55');
   return t;
@@ -734,7 +722,7 @@ function scene7(){
   t.fromTo(tag,{opacity:0},{opacity:1,duration:.5},2.85);
   // the subtitles flow one at a time, timeline-driven, and settle on the last;
   // nothing else moves until they have finished
-  [1,2].forEach((n,i)=>{
+  [1].forEach((n,i)=>{
     const swapAt=4.95+i*2.1;
     t.to(tag,{opacity:0,y:-6,duration:.3},swapAt);
     t.call(()=>{tag.querySelector('#tagline').textContent=TAGS[n];},null,swapAt+.32);
@@ -751,7 +739,7 @@ function scene7(){
   // refined diagonal: while a card holds centre, the NEXT one waits at the corner at low
   // opacity (a visible queue), then glides up the diagonal to take its place. Entry has a
   // soft overshoot settle; exit accelerates away. Times are precomputed so taps can seek.
-  const DWELL=[2.4,2.4,2.4,2.4];
+  const DWELL=[2.0,2.0,2.0,2.0];
   const cardTimes=[]; let at=3.9;
   const mk=(html)=>{const c=document.createElement('div');c.className='post';c.innerHTML=html;
     gsap.set(c,{opacity:0});
@@ -785,7 +773,7 @@ function scene7(){
   // tap the deck to jump to the next story; a small hint says so, once
   const hint=el('',`<div class="deckhint">tap to see the next one</div>`,532);
   t.fromTo(hint,{opacity:0},{opacity:.8,duration:.5},5.2);
-  t.to(hint,{opacity:0,duration:.4},9.6);
+  t.to(hint,{opacity:0,duration:.4},8.8);
   deckArea.addEventListener('click',e=>{
     e.stopPropagation();
     gsap.to(hint,{opacity:0,duration:.2});
@@ -794,21 +782,14 @@ function scene7(){
     tl.seek(nxt!=null?nxt:canvasAt);
   });
   // and a way straight to the ask, for people done browsing
-  const skip=el('',`<button class="deckskip">Skip</button>`,742);
-  skip.querySelector('.deckskip').addEventListener('click',e=>{
-    e.stopPropagation();
-    if(tl.time()<canvasAt) tl.seek(canvasAt);
-  });
-  t.fromTo(skip,{opacity:0},{opacity:1,duration:.4},4.4);
-
-  // the ask arrives only after the canvas has made its case
+  // the ask is on screen from the logo onward; the deck plays above it
   const cta=el('',`<div class="ctablock">
     <div class="ctasub">Start with one story to see others</div>
     <button class="cta" onclick="event.stopPropagation();play(8)">${GOOGLE} Sign up with Google</button>
     <button class="cta2" onclick="event.stopPropagation();play(8)">Sign in</button>
     <div class="legal">By continuing you agree to our <u>Terms</u> and <u>Privacy Policy</u></div>
   </div>`,586);
-  t.fromTo(cta.querySelectorAll('.ctasub,.cta,.cta2,.legal'),{opacity:0,y:12},{opacity:1,y:0,duration:.5,stagger:.14},at+1.5);
+  t.fromTo(cta.querySelectorAll('.ctasub,.cta,.cta2,.legal'),{opacity:0,y:12},{opacity:1,y:0,duration:.5,stagger:.14},2.85);
   return t;
 }
 
@@ -1038,7 +1019,9 @@ function play(n){
   cur=n;
   document.querySelectorAll('.scnav .sbtn').forEach((b,i)=>b.classList.toggle('on',i+1===n));
   tl=SCENES[n]();
+  tl.timeScale(1.2);
   const th=document.querySelector('.taphint'); if(th) th.style.display=(n<FILM_END)?'':'none';
+  const fs=document.getElementById('filmskip'); if(fs) fs.style.display=(n<FILM_END)?'':'none';
   // the film dashes belong to the film; app screens run their own chrome, and the brand
   // stands down where a full-bleed hero owns the top (exactly like the older prototype)
   const da=document.getElementById('dashes'); if(da) da.style.display=(n<=FILM_END)?'':'none';
@@ -1052,7 +1035,7 @@ function play(n){
 }
 // scene 5 gets a long post-hold: the comment is the emotional peak and needs reading time,
 // but the film must keep moving on its own
-function done(){ if(auto && cur<FILM_END) advanceTimer=setTimeout(()=>play(cur+1),cur===5?5000:(cur===6?400:1300)); }
+function done(){ if(auto && cur<FILM_END) advanceTimer=setTimeout(()=>play(cur+1),cur===5?2200:(cur===6?400:600)); }
 function toggleAuto(){ auto=!auto;
   document.getElementById('autoBtn').textContent='Auto-advance: '+(auto?'on':'off'); }
 function paintDashes(){
@@ -1063,6 +1046,9 @@ function paintDashes(){
   const fill=document.querySelector('.dash i');
   if(fill&&tl&&SCRUB==null) gsap.to(fill,{width:'100%',duration:tl.duration(),ease:'none'});
 }
+document.getElementById('filmskip').addEventListener('click',e=>{
+  e.stopPropagation(); play(FILM_END);
+});
 document.getElementById('device').addEventListener('click',()=>{
   if(cur<FILM_END) play(cur+1);          // film: tap advances
   else if(cur===FILM_END) return;        // closer: the CTA advances, not the canvas
