@@ -65,9 +65,6 @@
   .dash i{display:block;height:100%;width:0%;background:var(--ink)}
 
   .stage{position:relative;z-index:2;flex:1}
-  .filmskip{position:absolute;right:20px;bottom:14px;z-index:4;font-size:12.5px;font-weight:600;
-    color:var(--faint);cursor:pointer;padding:4px 8px}
-  .filmskip:hover{color:var(--dim)}
   .taphint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12.5px;z-index:3;
     letter-spacing:.05em;color:var(--faint);animation:tp 1.9s ease-in-out infinite}
   @keyframes tp{0%,100%{opacity:.4}50%{opacity:1}}
@@ -416,7 +413,6 @@
     <div class="dashes" id="dashes"></div>
     <div class="stage" id="stage"></div>
     <div class="taphint">Tap to continue</div>
-    <div class="filmskip" id="filmskip">Skip</div>
   </div></div>
 </main>
 
@@ -498,8 +494,24 @@ function scene1(){
   const open1=el('',`<div class="say" style="font-size:23px">${words('Your life has answers')}<br/>${words('people are searching for.')}</div>`,238);
   wordsIn(t,open1,.3,.07);
 
-  t.addLabel('claimHold','>+1.15');
+  const DOTIMGS=[PEOPLE[0].img,PEOPLE[1].img,PEOPLE[2].img,PPL+'p-ananya.jpg?v=4'];
+  const dots=[[-96,118],[-33,96],[33,96],[96,118]].map((p,i)=>{
+    const d=el('',`<span class="ping"></span><img class="face sm" style="width:46px;height:46px" src="${DOTIMGS[i]}">`,398);
+    gsap.set(d,{x:p[0],y:p[1],opacity:0,scale:.4});
+    return d;
+  });
+  t.addLabel('evidence','>+.55');
+  dots.forEach((d,i)=>{
+    const at='evidence+='+(0.1+i*0.12);
+    t.fromTo(d,{opacity:0,y:'+=16',scale:.4},{opacity:.95,y:'-=16',scale:1,duration:.38,ease:'back.out(1.6)'},at);
+    t.fromTo(d.querySelector('.ping'),{scale:.5,opacity:.6},{scale:2.0,opacity:0,duration:.7,ease:'power1.out'},at);
+  });
+  t.addLabel('claimHold','>+0.7');
   t.to(open1,{opacity:0,y:-16,duration:.45,ease:'power2.in'},'claimHold');
+  // the searchers become a person: the group glides to where the first face will appear
+  dots.forEach((d,i)=>{
+    t.to(d,{x:0,y:-176,scale:.35,opacity:0,duration:.5,ease:'power2.in',delay:i*.03},'claimHold');
+  });
 
   // the people: WHO they are to you leads; the question supports quietly underneath
   PEOPLE.forEach((p,i)=>{
@@ -548,22 +560,17 @@ function scene2(){
       .map(x=>`<span>${x}</span>`).join('')}</div>
   </div>`;
   t.fromTo(cost,{opacity:0,y:22},{opacity:1,y:0,duration:.6,ease:'power3.out'},1.0);
-  // lockstep: a step label lands, THEN the clock adds exactly that step's minutes,
-  // pauses, and the next label repeats the beat. 5 + 7 + 15 + 15 + 3 = 45.
-  const PH=[['decide',1,5],['words',5,12],['write',12,27],['rewrite',27,42],['post',42,45]];
+  // the labels land directly; the clock runs 1 -> 45 linearly underneath them
   const chips=cost.querySelectorAll('.cst-l span');
-  let T=1.35;
-  PH.forEach(([_,from,to],i)=>{
-    t.fromTo(chips[i],{opacity:0,y:8},{opacity:1,y:0,duration:.35},T);
-    // one clean jump per step, with a small pulse so the change registers
-    t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=to;},null,T+.45);
-    t.fromTo(cost.querySelector('.cst-t'),{scale:1.07},{scale:1,duration:.3},T+.45);
-    T+=0.9;
-  });
-  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},T-.35);
+  t.fromTo(chips,{opacity:0,y:8},{opacity:1,y:0,duration:.35,stagger:.14},1.2);
+  for(let k=0;k<=22;k++){
+    const v=Math.round(1+44*k/22);
+    t.call(()=>{const e=document.getElementById('cstN'); if(e) e.textContent=v;},null,1.25+k*.08);
+  }
+  t.fromTo(cost.querySelector('.cst-t'),{scale:1.12},{scale:1,duration:.35},3.1);
 
   const sayEl=el('',`<div class="say" style="font-size:22px">${words('So it stays in your *head*.')}</div>`,568);
-  wordsIn(t,sayEl,T+.5,.09);
+  wordsIn(t,sayEl,3.6,.09);
   t.addLabel('end','>+1.9');
   return t;
 }
@@ -680,9 +687,9 @@ function scene6(){
   const grid=el('',`<div class="pfg">${titles.map((x,i)=>`<span class="pft"><img src="${ARTS[i]}"><em>${x}</em>
     <span class="pfx"><svg viewBox="0 0 24 24"><path d="M4.9 5.5C3.1 7 2 9.2 2 11.6 2 15 4.1 17.2 6.7 17.2c2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4L4.9 5.5Zm9.6 0c-1.8 1.5-2.9 3.7-2.9 6.1 0 3.4 2.1 5.6 4.7 5.6 2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4l-4.5-.6Z"/></svg>${IX[i][0]}
     <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>${IX[i][1]}</span></span>`).join('')}</div>`,286);
-  t.fromTo(grid.querySelectorAll('.pft'),{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.3,ease:'back.out(1.3)'},1.2);
-  [1,2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+(n===1?' story':' stories');},null,1.4+i*.3));
-  t.addLabel('end','>+1.8');
+  t.fromTo(grid.querySelectorAll('.pft'),{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.45,ease:'back.out(1.3)'},1.2);
+  [1,2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+(n===1?' story':' stories');},null,1.4+i*.45));
+  t.addLabel('end','>+2.2');
   // soft outro: the profile recedes before the reveal, instead of a hard cut
   t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.55');
   return t;
@@ -1019,9 +1026,8 @@ function play(n){
   cur=n;
   document.querySelectorAll('.scnav .sbtn').forEach((b,i)=>b.classList.toggle('on',i+1===n));
   tl=SCENES[n]();
-  tl.timeScale(1.2);
+  tl.timeScale(1.1);
   const th=document.querySelector('.taphint'); if(th) th.style.display=(n<FILM_END)?'':'none';
-  const fs=document.getElementById('filmskip'); if(fs) fs.style.display=(n<FILM_END)?'':'none';
   // the film dashes belong to the film; app screens run their own chrome, and the brand
   // stands down where a full-bleed hero owns the top (exactly like the older prototype)
   const da=document.getElementById('dashes'); if(da) da.style.display=(n<=FILM_END)?'':'none';
@@ -1046,9 +1052,6 @@ function paintDashes(){
   const fill=document.querySelector('.dash i');
   if(fill&&tl&&SCRUB==null) gsap.to(fill,{width:'100%',duration:tl.duration(),ease:'none'});
 }
-document.getElementById('filmskip').addEventListener('click',e=>{
-  e.stopPropagation(); play(FILM_END);
-});
 document.getElementById('device').addEventListener('click',()=>{
   if(cur<FILM_END) play(cur+1);          // film: tap advances
   else if(cur===FILM_END) return;        // closer: the CTA advances, not the canvas
