@@ -697,12 +697,8 @@ function scene5(){
   gsap.set(card.querySelector('.rm'),{opacity:.4});
   gsap.set(kimg,{scale:1.045,transformOrigin:'50% 38%'});
   t.fromTo(kimg,{scale:1.045},{scale:1.08,duration:6.8,ease:'none'},0);
-  // voice swap, alone
+  // the top goes quiet; the action owns the frame until it is done
   voiceOut(t,line4,.2);
-  const lineA=el('',`<div class="say" style="font-size:24px">Your story finds<br/>the <em>right</em> people.</div>`,VOICE);
-  gsap.set(lineA,{opacity:0});
-  t.set(lineA,{opacity:1},.42); gsap.set(lineA,{opacity:0});
-  voiceIn(t,lineA,.42);
   // the mechanism, quieter than the hero
   const srch=el('',`<div class="srch paper" style="width:324px"><span class="si">\u2315</span><span class="st" id="srchT"></span><span class="cb-cur"></span></div>`,MECH);
   t.fromTo(srch,{opacity:0,y:-8},{opacity:1,y:0,duration:.38,ease:'power3.out'},.9);
@@ -729,11 +725,9 @@ function scene5(){
   // the mechanism exits; its band is inherited by scene 6's profile head
   t.to(srch,{opacity:0,y:-14,duration:.3,ease:'power2.in'},4.75);
   // payoff line, with nothing else moving
-  voiceOut(t,lineA,5.0);
-  const lineB=el('',`<div class="say" style="font-size:24px">And conversations<br/>begin.</div>`,VOICE);
-  gsap.set(lineB,{opacity:0});
-  voiceIn(t,lineB,5.25);
-  t.to({},{duration:1.1},5.85);
+  const line=el('',`<div class="say" style="font-size:24px">Your story finds the <em>right</em> people.<br/>And conversations begin.</div>`,VOICE);
+  voiceIn(t,line,5.15);
+  t.to({},{duration:1.6},5.85);
   return t;
 }
 
@@ -742,7 +736,7 @@ function scene6(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
   // match cut: scene 5's final frame
-  const lineB=el('',`<div class="say" style="font-size:24px">And conversations<br/>begin.</div>`,VOICE);
+  const lineB=el('',`<div class="say" style="font-size:24px">Your story finds the <em style="--hl:1">right</em> people.<br/>And conversations begin.</div>`,VOICE);
   const card=el('elL',HERO_CARD,HERO);
   const sc=card.querySelector('.stoc');
   const kimg=card.querySelector('.cov img');
@@ -760,14 +754,11 @@ function scene6(){
   t.to(card.querySelector('.cmtrow'),{height:0,paddingTop:0,paddingBottom:0,duration:.42,ease:'power2.inOut'},.44);
   t.to(bs[0],{opacity:0,duration:.2},.44);
   t.to(bs[0].parentElement,{height:0,marginTop:0,duration:.42,ease:'power2.inOut'},.5);
-  // 2 \u00b7 thesis first
-  voiceOut(t,lineB,.95);
-  const line=el('',`<div class="say" style="font-size:24px">Story by story,<br/>you <em>paint</em> a profile.</div>`,VOICE);
-  gsap.set(line,{opacity:0});
-  voiceIn(t,line,1.2);
+  // 2 \u00b7 the top goes quiet while the story is filed
+  voiceOut(t,lineB,.3);
   // 3 \u00b7 who this belongs to, in the band the search left behind
   const head=el('',`<div class="pfh"><img class="pfa" src="${PPL}p-you.jpg?v=4"><span class="pfn"><b>You</b><i id="pfc">1 story</i></span></div>`,MECH);
-  t.fromTo(head,{opacity:0,y:8},{opacity:1,y:0,duration:.38,ease:'power2.out'},1.75);
+  t.fromTo(head,{opacity:0,y:8},{opacity:1,y:0,duration:.38,ease:'power2.out'},1.25);
   // the grid lives exactly where the hero lives: tile #1's corner == card's corner
   const titles=['Why I switched streams','The year I thought everyone knew more','What my first salary taught me','Friendship, after college'];
   const ART_AT=[ARTS[2],ARTS[0],ARTS[1],ARTS[3]];
@@ -782,18 +773,21 @@ function scene6(){
   t.call(()=>{
     const h=sc.offsetHeight, target=297;
     if(Math.abs(h-target)>2) gsap.to(sc,{paddingBottom:'+='+(target-h),duration:.2});
-  },null,1.9);
-  t.to(card.querySelector('.fcq'),{opacity:0,scale:.6,duration:.4,ease:'power1.out'},2.1);
-  t.to(sc,{scale:156/324,transformOrigin:'0 0',borderRadius:27,duration:.56,ease:'power2.inOut'},2.3);
+  },null,1.55);
+  t.to(card.querySelector('.fcq'),{opacity:0,scale:.6,duration:.4,ease:'power1.out'},1.75);
+  t.to(sc,{scale:156/324,transformOrigin:'0 0',borderRadius:27,duration:.56,ease:'power2.inOut'},1.95);
   // 5 \u00b7 hard cut on the landing frame: the shrunken card IS tile #1 from here on
-  t.call(()=>{ card.style.display='none'; gsap.set(tiles[0],{opacity:1}); },null,2.87);
-  t.fromTo(tiles[0],{scale:1.012,transformOrigin:'0 0'},{scale:1,duration:.12},2.88);
+  t.call(()=>{ card.style.display='none'; gsap.set(tiles[0],{opacity:1}); },null,2.52);
+  t.fromTo(tiles[0],{scale:1.012,transformOrigin:'0 0'},{scale:1,duration:.12},2.53);
   // 6 \u00b7 the rest of the profile arrives complete, count in lockstep
-  t.fromTo(tiles[1],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.15);
-  t.fromTo(tiles[2],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.47);
-  t.fromTo(tiles[3],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.79);
-  [2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+' stories';},null,3.15+i*.32));
-  t.to({},{duration:1.75},4.25);
+  t.fromTo(tiles[1],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},2.8);
+  t.fromTo(tiles[2],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.12);
+  t.fromTo(tiles[3],{opacity:0,y:10,scale:.94},{opacity:1,y:0,scale:1,duration:.38,ease:'power3.out'},3.44);
+  [2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+' stories';},null,2.8+i*.32));
+  // the line arrives only after the profile is complete
+  const line=el('',`<div class="say" style="font-size:24px">Story by story,<br/>you <em>paint</em> a profile.</div>`,VOICE);
+  voiceIn(t,line,4.0);
+  t.to({},{duration:1.9},4.7);
   t.addLabel('end','>+0');
   t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.4');
   return t;
