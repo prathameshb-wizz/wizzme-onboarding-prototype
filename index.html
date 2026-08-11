@@ -535,6 +535,7 @@ function scene1(){
 
   const turn=el('',`<div class="say" style="font-size:27px">${words('Yet you rarely get to *share* it.')}</div>`,320);
   wordsIn(t,turn,'claimAt+=2.6',.09);
+  t.to({},{duration:.8},'>');
   t.addLabel('end','>+2.0');
   return t;
 }
@@ -640,7 +641,10 @@ function scene4(){
   t.fromTo(bs[0],{opacity:0,y:6},{opacity:1,y:0,duration:.5},2.9);
   t.fromTo(bs[1],{opacity:0,y:6},{opacity:1,y:0,duration:.55},3.5);
   t.fromTo(card.querySelector('.rm'),{opacity:0},{opacity:1,duration:.4},4.2);
-  // reading hold: the assembled card stays put before the match cut into scene 5
+  // the hold is never static: the cover drifts in a slow Ken Burns at reading pace
+  const kimg=card.querySelector('.cov img');
+  gsap.set(kimg,{transformOrigin:'50% 38%'});
+  t.fromTo(kimg,{scale:1},{scale:1.09,duration:5.6,ease:'none'},1.3);
   t.to({},{duration:2.6},4.6);
   return t;
 }
@@ -649,7 +653,7 @@ function scene4(){
 function scene5(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
-  // open on scene 4's final frame so the cut is invisible
+  // open on scene 4's exact final frame so the cut is invisible
   const line4=el('',`<div class="say" style="font-size:24px">${words('And it becomes a story')}<br/>${words('worth *looking at*.')}</div>`,108);
   const em4=line4.querySelector('em'); if(em4) em4.style.setProperty('--hl',1);
   const card=el('',`<div class="stoc">
@@ -659,40 +663,41 @@ function scene5(){
       <p>Everyone called it a risk. A semester of misery, one gut call, and two years on it is the best decision I have made.</p>
       <div class="rm">read more</div>
     </div></div>`,232);
-  // the headline hands over...
-  t.to(line4,{opacity:0,y:-14,duration:.4,ease:'power2.in'},.25);
-  const line=el('',`<div class="say" style="font-size:24px">${words('Your story finds the *right* people.')}<br/>${words('And conversations begin.')}</div>`,108);
-  t.set(line,{opacity:1},0); gsap.set(line.querySelectorAll('.w'),{opacity:0});
-  wordsIn(t,line,.6,.07);
-  // ...and the SAME card compacts and settles lower: the story, seen from outside
   const sc=card.querySelector('.stoc');
-  t.to(card,{top:300,duration:.75,ease:'power3.inOut'},1.0);
-  t.to(sc,{width:280,duration:.75,ease:'power3.inOut'},1.0);
-  t.to(sc.querySelector('.cov'),{height:128,duration:.75,ease:'power3.inOut'},1.0);
-  t.to(sc.querySelector('.ti'),{fontSize:'14.5px',marginBottom:2,duration:.75,ease:'power3.inOut'},1.0);
-  // text vanishes first, THEN the space closes, so lines never cross mid-collapse
-  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{opacity:0,duration:.2,ease:'power1.in'},1.0);
-  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{height:0,marginTop:0,duration:.5,ease:'power3.inOut'},1.12);
-  // the search that finds it appears above, types, and the card answers with a pulse
-  const srch=el('',`<div class="srch"><span class="si">\u2315</span><span class="st" id="srchT"></span></div>`,238);
-  t.fromTo(srch,{opacity:0,y:-10},{opacity:1,y:0,duration:.45},1.9);
+  gsap.set(card.querySelector('.cov img'),{scale:1.09,transformOrigin:'50% 38%'});
+
+  // 1 · the top goes quiet
+  t.to(line4,{opacity:0,y:-14,duration:.45,ease:'power2.in'},.3);
+  // 2 · the search arrives where the headline was, and types
+  const srch=el('',`<div class="srch"><span class="si">\u2315</span><span class="st" id="srchT"></span></div>`,130);
+  t.fromTo(srch,{opacity:0,y:-12},{opacity:1,y:0,duration:.5},.95);
   t.call(()=>{
     const e=document.getElementById('srchT'); if(!e) return;
     e.innerHTML=chars('thinking of switching streams');
     gsap.to(e.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.022});
-  },null,2.15);
-  t.to(sc,{scale:1.025,duration:.28,yoyo:true,repeat:1,ease:'power1.inOut'},3.2);
+  },null,1.2);
+  // 3 · the story answers the search: it collapses and settles just below the bar
+  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{opacity:0,duration:.2,ease:'power1.in'},2.2);
+  t.to([sc.querySelector('p'),sc.querySelector('.rm')],{height:0,marginTop:0,duration:.5,ease:'power3.inOut'},2.32);
+  t.to(card,{top:210,duration:.75,ease:'power3.inOut'},2.2);
+  t.to(sc,{width:280,duration:.75,ease:'power3.inOut'},2.2);
+  t.to(sc.querySelector('.cov'),{height:128,duration:.75,ease:'power3.inOut'},2.2);
+  t.to(sc.querySelector('.ti'),{fontSize:'14.5px',marginBottom:2,duration:.75,ease:'power3.inOut'},2.2);
+  t.to(sc,{scale:1.02,duration:.24,yoyo:true,repeat:1,ease:'power1.inOut'},3.0);
+  // 4 · the conversation begins
   const conv=el('',`<div class="convrow rt">
      <span class="cvb rt"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
-     <img src="${PEOPLE[0].img}"></div>`,552);
-  t.fromTo(conv,{opacity:0,x:26,y:8},{opacity:1,x:0,y:0,duration:.55,ease:'power2.out'},3.9);
+     <img src="${PEOPLE[0].img}"></div>`,462);
+  t.fromTo(conv,{opacity:0,x:26,y:8},{opacity:1,x:0,y:0,duration:.55,ease:'power2.out'},3.5);
   t.call(()=>{
     const sp=conv.querySelector('.cvtxt'); if(!sp) return;
     sp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
     gsap.to(sp.querySelectorAll('.ch'),{display:'inline-block',duration:.001,stagger:.02});
-  },null,4.1);
-  // reading hold for the comment
-  t.to({},{duration:2.4},4.6);
+  },null,3.7);
+  // 5 · only now, the line lands below everything, and STAYS
+  const line=el('',`<div class="say" style="font-size:22px">${words('Your story finds the *right* people.')}<br/>${words('And conversations begin.')}</div>`,566);
+  wordsIn(t,line,5.1,.07);
+  t.to({},{duration:2.6},5.9);
   return t;
 }
 
@@ -700,20 +705,63 @@ function scene5(){
 function scene6(){
   stage.innerHTML='';
   const t=gsap.timeline({onComplete:done});
-  const line=el('',`<div class="say" style="font-size:24px">${words('Story by story,')}<br/>${words('you *paint* a profile.')}</div>`,108);
-  wordsIn(t,line,.2,.08);
-  const head=el('',`<div class="pfh"><img class="pfa" src="${PPL}p-you.jpg?v=4"><span class="pfn"><b>You</b><i id="pfc">0 stories</i></span></div>`,214);
-  t.fromTo(head,{opacity:0,y:10},{opacity:1,y:0,duration:.5},.9);
+  // ghosts of scene 5's final frame, so this cut is invisible too
+  const gsr=el('',`<div class="srch"><span class="si">\u2315</span><span class="st"></span></div>`,130);
+  const gst=gsr.querySelector('.st'); gst.innerHTML=chars('thinking of switching streams');
+  gst.querySelectorAll('.ch').forEach(c=>c.style.display='inline-block');
+  const gcv=el('',`<div class="convrow rt">
+     <span class="cvb rt"><b>Arjun \u00b7 asked through Wizzme</b><span class="cvtxt"></span></span>
+     <img src="${PEOPLE[0].img}"></div>`,462);
+  const gsp=gcv.querySelector('.cvtxt'); gsp.innerHTML=chars('I am stuck on this exact decision right now. What finally made you sure?');
+  gsp.querySelectorAll('.ch').forEach(c=>c.style.display='inline-block');
+  const gln=el('',`<div class="say" style="font-size:22px">${words('Your story finds the *right* people.')}<br/>${words('And conversations begin.')}</div>`,566);
+  const gem=gln.querySelector('em'); if(gem) gem.style.setProperty('--hl',1);
+  const card=el('',`<div class="stoc" style="width:280px">
+    <div class="cov" style="height:128px"><img src="${ARTS[2]}"><span class="fcq">\u201D</span></div>
+    <div class="in"><div class="by">Switching streams, 2022</div>
+      <div class="ti" style="font-size:14.5px;margin-bottom:2px">Why I switched streams and never looked back</div>
+    </div></div>`,210);
+  const sc=card.querySelector('.stoc');
+  gsap.set(card.querySelector('.cov img'),{scale:1.09,transformOrigin:'50% 38%'});
+
+  // 1 · the conversation recedes; the story stays
+  t.to([gsr,gcv,gln],{opacity:0,y:-10,duration:.45,ease:'power2.in',stagger:.05},.2);
+  // the story makes room while the conversation recedes
+  t.to(card,{top:322,duration:.6,ease:'power2.inOut'},.35);
+  // 2 · the profile arrives first: who this canvas belongs to
+  const head=el('',`<div class="pfh"><img class="pfa" src="${PPL}p-you.jpg?v=4"><span class="pfn"><b>You</b><i id="pfc">1 story</i></span></div>`,214);
+  t.fromTo(head,{opacity:0,y:12},{opacity:1,y:0,duration:.5},1.0);
+  // 3 · the story shrinks INTO its place on the profile
   const titles=['The year I thought everyone knew more','What my first salary taught me','Why I switched streams','Friendship, after college'];
   const IX=[[14,3],[22,6],[31,9],[18,4]];
   const grid=el('',`<div class="pfg">${titles.map((x,i)=>`<span class="pft"><img src="${ARTS[i]}"><em>${x}</em>
     <span class="pfx"><svg viewBox="0 0 24 24"><path d="M4.9 5.5C3.1 7 2 9.2 2 11.6 2 15 4.1 17.2 6.7 17.2c2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4L4.9 5.5Zm9.6 0c-1.8 1.5-2.9 3.7-2.9 6.1 0 3.4 2.1 5.6 4.7 5.6 2.1 0 3.6-1.5 3.6-3.5 0-1.9-1.4-3.3-3.3-3.3-.3 0-.6 0-.8.1.3-1.7 1.6-3.4 3.2-4.4l-4.5-.6Z"/></svg>${IX[i][0]}
     <svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="5.1"/><path d="M8.9 12.6 7.2 19.8l4.8-2.7 4.8 2.7-1.7-7.2-3.1 1.2-3.1-1.2Z"/></svg>${IX[i][1]}</span></span>`).join('')}</div>`,286);
-  t.fromTo(grid.querySelectorAll('.pft'),{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.45,ease:'back.out(1.3)'},1.2);
-  [1,2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+(n===1?' story':' stories');},null,1.4+i*.45));
-  t.addLabel('end','>+2.2');
+  const tiles=grid.querySelectorAll('.pft');
+  gsap.set(tiles,{opacity:0});
+  // FLIP: measure where the switching-streams tile sits, then send the card there live
+  t.call(()=>{
+    const r1=sc.getBoundingClientRect(), r2=tiles[2].getBoundingClientRect();
+    const k=stage.getBoundingClientRect().width/390;
+    gsap.to(card,{x:'+='+((r2.left-r1.left)/k),y:'+='+((r2.top-r1.top)/k),duration:.9,ease:'power3.inOut'});
+    gsap.to(sc,{width:156,duration:.9,ease:'power3.inOut'});
+    gsap.to(sc.querySelector('.cov'),{height:82,duration:.9,ease:'power3.inOut'});
+    gsap.to(sc.querySelector('.ti'),{fontSize:'12px',duration:.9,ease:'power3.inOut'});
+    gsap.to(sc.querySelector('.by'),{opacity:0,height:0,marginBottom:0,duration:.4,ease:'power2.in'});
+  },null,1.6);
+  // hand over from the traveling card to the real tile
+  t.fromTo(tiles[2],{opacity:0},{opacity:1,duration:.25},2.55);
+  t.to(card,{opacity:0,duration:.25},2.55);
+  // 4 · the rest of the profile fills in around it
+  t.fromTo([tiles[0],tiles[1],tiles[3]],{opacity:0,y:12,scale:.95},{opacity:1,y:0,scale:1,duration:.5,stagger:.45,ease:'back.out(1.3)'},2.8);
+  [2,3,4].forEach((n,i)=>t.call(()=>{const e=document.getElementById('pfc'); if(e) e.textContent=n+' stories';},null,2.95+i*.45));
+  // 5 · the meaning arrives last
+  const line=el('',`<div class="say" style="font-size:24px">${words('Story by story,')}<br/>${words('you *paint* a profile.')}</div>`,108);
+  wordsIn(t,line,4.3,.08);
+  t.to({},{duration:1.6},5.4);
+  t.addLabel('end','>+0');
   // soft outro: the profile recedes before the reveal, instead of a hard cut
-  t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.55');
+  t.to([line,head,grid],{opacity:0,y:-12,duration:.5,stagger:.06,ease:'power2.in'},'end-=.4');
   return t;
 }
 
@@ -1063,7 +1111,7 @@ function play(n){
 }
 // scene 5 gets a long post-hold: the comment is the emotional peak and needs reading time,
 // but the film must keep moving on its own
-function done(){ if(auto && cur<FILM_END) advanceTimer=setTimeout(()=>play(cur+1),cur===5?2200:(cur===4?120:(cur===6?400:600))); }
+function done(){ if(auto && cur<FILM_END) advanceTimer=setTimeout(()=>play(cur+1),cur===5?150:(cur===4?120:(cur===6?400:600))); }
 function toggleAuto(){ auto=!auto;
   document.getElementById('autoBtn').textContent='Auto-advance: '+(auto?'on':'off'); }
 function paintDashes(){
